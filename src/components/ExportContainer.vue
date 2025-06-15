@@ -8,6 +8,8 @@
 
 <script setup>
 import { defineProps } from "vue";
+import * as XLSX from "xlsx"; // xlsx 라이브러리 임포트
+
 const props = defineProps({ users: Array });
 
 function getUserGrade(participationCount) {
@@ -30,9 +32,10 @@ function exportToExcel() {
     "최종 참여일": user.lastParticipationDate,
     자기소개: user.introduction,
   }));
-  const worksheet = window.XLSX.utils.json_to_sheet(dataToExport);
-  const workbook = window.XLSX.utils.book_new();
-  window.XLSX.utils.book_append_sheet(workbook, worksheet, "사용자 데이터");
-  window.XLSX.writeFile(workbook, "사용자_분석_리포트.xlsx");
+  // 'window.XLSX' 대신 'XLSX' 사용
+  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "사용자 데이터");
+  XLSX.writeFile(workbook, "사용자_분석_리포트.xlsx");
 }
 </script>
