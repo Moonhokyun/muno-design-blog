@@ -41,6 +41,12 @@
         </div>
       </div>
     </div>
+
+    <div class="dummy-link-wrapper">
+      <a href="#" @click.prevent="loadDummy" class="dummy-data-link">
+        또는, 예시 데이터로 둘러보기
+      </a>
+    </div>
   </section>
 
   <PromptModal ref="promptModal" />
@@ -48,12 +54,11 @@
 
 <script setup>
 import { ref, defineEmits } from "vue";
-// PromptAccordion 대신 PromptModal을 import 합니다.
 import PromptModal from "./PromptModal.vue";
 
 const fileName = ref("");
-const emit = defineEmits(["file-uploaded"]);
-// 모달 컴포넌트를 제어하기 위한 ref 생성
+const emit = defineEmits(["file-uploaded", "load-dummy-data"]);
+
 const promptModal = ref(null);
 
 function onFileChange(event) {
@@ -63,11 +68,15 @@ function onFileChange(event) {
     emit("file-uploaded", file);
   }
 }
-// 모달을 여는 함수 (추가된 부분)
+
 function showPromptModal() {
   if (promptModal.value) {
     promptModal.value.openModal();
   }
+}
+
+function loadDummy() {
+  emit("load-dummy-data");
 }
 </script>
 
@@ -95,28 +104,30 @@ function showPromptModal() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 300px; /* 박스의 최소 너비를 지정하여 자연스럽게 줄바꿈되도록 합니다. */
+  min-width: 300px;
+  justify-content: space-between;
 }
 .method-box h3 {
   margin-top: 0;
 }
 .description {
-  min-height: 60px; /* 설명 텍스트 높이를 맞춰줍니다. */
+  min-height: 60px;
+  flex-grow: 1;
 }
 .button-group {
   width: 100%;
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-top: auto; /* 버튼들을 아래쪽에 위치시킵니다. */
+  margin-top: auto;
   padding-top: 20px;
-  flex-wrap: wrap; /* << 이 속성을 추가했습니다 */
+  flex-wrap: wrap;
 }
 .file-info {
   margin-top: 16px;
   font-size: 14px;
   color: #666;
-  height: 20px; /* 파일 정보가 없을 때도 높이를 차지하도록 설정 */
+  height: 20px;
 }
 .prompt-btn {
   background-color: var(--secondary-color);
@@ -133,8 +144,6 @@ function showPromptModal() {
 .prompt-btn:hover {
   background-color: #2c3e50;
 }
-
-/* 버튼 스타일 (기존 FileInputContainer에서 가져옴) */
 .upload-btn {
   background-color: var(--primary-color);
   color: white;
@@ -165,5 +174,20 @@ function showPromptModal() {
 }
 .template-btn:hover {
   background-color: #5a6268;
+}
+
+/* 예시 데이터 링크 스타일 */
+.dummy-link-wrapper {
+  margin-top: 24px;
+  text-align: center;
+}
+.dummy-data-link {
+  font-size: 14px;
+  color: var(--secondary-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.dummy-data-link:hover {
+  color: var(--primary-color);
 }
 </style>
