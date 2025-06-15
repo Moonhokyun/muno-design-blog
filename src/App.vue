@@ -1,19 +1,71 @@
 <script setup>
 import { ref } from "vue";
 import * as XLSX from "xlsx";
-// 새로 만든 DataUploadContainer를 import 합니다.
 import DataUploadContainer from "./components/DataUploadContainer.vue";
 import ChartContainer from "./components/ChartContainer.vue";
 import TableContainer from "./components/TableContainer.vue";
 import UserDetailContainer from "./components/UserDetailContainer.vue";
 import ExportContainer from "./components/ExportContainer.vue";
-// PromptAccordion은 이제 DataUploadContainer 내부에서만 사용되므로 여기서 import할 필요 없습니다.
+
+function getDummyData() {
+  return [
+    {
+      name: "김열정",
+      participationCount: 15,
+      lastAccessDate: "2024.10.25",
+      lastParticipationDate: "2024.10.25",
+      introduction:
+        "모임의 모든 활동에 참여하는 것을 좋아합니다. 다음 정모가 기대되네요!",
+    },
+    {
+      name: "이꾸준",
+      participationCount: 8,
+      lastAccessDate: "2024.10.26",
+      lastParticipationDate: "2024.10.20",
+      introduction: "꾸준히 참여하는 것이 중요하다고 생각합니다.",
+    },
+    {
+      name: "박신입",
+      participationCount: 2,
+      lastAccessDate: "2024.10.26",
+      lastParticipationDate: "2024.10.26",
+      introduction: "안녕하세요, 이번에 새로 가입했습니다. 잘 부탁드립니다.",
+    },
+    {
+      name: "최초보",
+      participationCount: 1,
+      lastAccessDate: "2024.10.24",
+      lastParticipationDate: "2024.10.24",
+      introduction: "아직은 모든 것이 낯설지만 열심히 배워보겠습니다.",
+    },
+    {
+      name: "강매니아",
+      participationCount: 22,
+      lastAccessDate: "2024.10.26",
+      lastParticipationDate: "2024.10.25",
+      introduction: "운영진 버금가는 열정으로 함께합니다.",
+    },
+    {
+      name: "조유령",
+      participationCount: 0,
+      lastAccessDate: "2024.08.10",
+      lastParticipationDate: "N/A",
+      introduction: "가입만 하고 활동을 못했네요.",
+    },
+  ];
+}
 
 const users = ref([]);
-const selectedUser = ref(null); // fileName은 이제 DataUploadContainer가 관리합니다.
+const selectedUser = ref(null);
 
-// ... handleFileUpload, selectUser, formatDate 함수 등은 그대로 유지 ...
+function loadDummyData() {
+  users.value = getDummyData();
+  selectedUser.value = null;
+}
+
 function handleFileUpload(file) {
+  users.value = [];
+  selectedUser.value = null;
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
@@ -67,7 +119,10 @@ function formatDate(date) {
       <h1>사용자 데이터 분석 대시보드</h1>
     </header>
 
-    <DataUploadContainer @file-uploaded="handleFileUpload" />
+    <DataUploadContainer
+      @file-uploaded="handleFileUpload"
+      @load-dummy-data="loadDummyData"
+    />
 
     <main
       v-if="users.length > 0"
@@ -85,7 +140,3 @@ function formatDate(date) {
     </main>
   </div>
 </template>
-
-<style scoped>
-/* ... */
-</style>
