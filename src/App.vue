@@ -1,86 +1,63 @@
 <script setup>
 import { ref } from "vue";
-import FileInputContainer from "./components/FileInputContainer.vue";
+import * as XLSX from "xlsx";
+// 새로 만든 DataUploadContainer를 import 합니다.
+import DataUploadContainer from "./components/DataUploadContainer.vue";
 import ChartContainer from "./components/ChartContainer.vue";
 import TableContainer from "./components/TableContainer.vue";
 import UserDetailContainer from "./components/UserDetailContainer.vue";
 import ExportContainer from "./components/ExportContainer.vue";
+// PromptAccordion은 이제 DataUploadContainer 내부에서만 사용되므로 여기서 import할 필요 없습니다.
 
 const users = ref([]);
-const fileName = ref("");
-const selectedUser = ref(null);
+const selectedUser = ref(null); // fileName은 이제 DataUploadContainer가 관리합니다.
 
+// ... handleFileUpload, selectUser, formatDate 함수 등은 그대로 유지 ...
 function handleFileUpload(file) {
-  fileName.value = file.name;
-  // 실제 PDF 파싱 대신 모의 데이터 사용
-  loadMockData();
-}
-
-function loadMockData() {
-  users.value = [
-    {
-      name: "김열정",
-      participationCount: 15,
-      lastAccessDate: "2024.10.25",
-      lastParticipationDate: "2024.10.25",
-      introduction:
-        "모임의 모든 활동에 참여하는 것을 좋아합니다. 다음 정모가 기대되네요!",
-    },
-    {
-      name: "이꾸준",
-      participationCount: 8,
-      lastAccessDate: "2024.10.26",
-      lastParticipationDate: "2024.10.20",
-      introduction: "꾸준히 참여하는 것이 중요하다고 생각합니다.",
-    },
-    {
-      name: "박신입",
-      participationCount: 2,
-      lastAccessDate: "2024.10.26",
-      lastParticipationDate: "2024.10.26",
-      introduction: "안녕하세요, 이번에 새로 가입했습니다. 잘 부탁드립니다.",
-    },
-    {
-      name: "최초보",
-      participationCount: 1,
-      lastAccessDate: "2024.10.24",
-      lastParticipationDate: "2024.10.24",
-      introduction: "아직은 모든 것이 낯설지만 열심히 배워보겠습니다.",
-    },
-    {
-      name: "정단골",
-      participationCount: 7,
-      lastAccessDate: "2024.10.21",
-      lastParticipationDate: "2024.10.18",
-      introduction: "이 모임, 정말 마음에 들어요.",
-    },
-    {
-      name: "강매니아",
-      participationCount: 22,
-      lastAccessDate: "2024.10.26",
-      lastParticipationDate: "2024.10.25",
-      introduction: "운영진 버금가는 열정으로 함께합니다.",
-    },
-    {
-      name: "조유령",
-      participationCount: 0,
-      lastAccessDate: "2024.08.10",
-      lastParticipationDate: "N/A",
-      introduction: "가입만 하고 활동을 못했네요.",
-    },
-    {
-      name: "윤새내기",
-      participationCount: 3,
-      lastAccessDate: "2024.10.22",
-      lastParticipationDate: "2024.10.22",
-      introduction: "만나서 반갑습니다.",
-    },
-  ];
-  selectedUser.value = null;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, {
+        type: "array",
+        codepage: 949,
+        cellDates: true,
+      });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      users.value = jsonData.map((row) => ({
+        name: row["이름"],
+        participationCount: row["참여 횟수"],
+        lastAccessDate: formatDate(row["최종 접속일"]),
+        lastParticipationDate: formatDate(row["최종 참여일"]),
+        introduction: row["자기소개"],
+      }));
+    } catch (error) {
+      console.error("파일을 처리하는 중 오류가 발생했습니다:", error);
+      alert(
+        "파일을 처리하는 데 실패했습니다. 파일 형식이나 내용을 확인해주세요."
+      );
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function selectUser(user) {
   selectedUser.value = user;
+}
+
+function formatDate(date) {
+  if (typeof date !== "object" || date === null) {
+    return date;
+  }
+  if (date instanceof Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}.${month}.${day}`;
+  }
+  return date;
 }
 </script>
 
@@ -89,11 +66,14 @@ function selectUser(user) {
     <header>
       <h1>사용자 데이터 분석 대시보드</h1>
     </header>
-    <FileInputContainer
-      @file-uploaded="handleFileUpload"
-      :fileName="fileName"
-    />
-    <main v-if="users.length > 0" class="main-content-area">
+
+    <DataUploadContainer @file-uploaded="handleFileUpload" />
+
+    <main
+      v-if="users.length > 0"
+      id="dashboard-content"
+      class="main-content-area"
+    >
       <ChartContainer :users="users" />
       <TableContainer
         :users="users"
@@ -107,16 +87,5 @@ function selectUser(user) {
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+/* ... */
 </style>

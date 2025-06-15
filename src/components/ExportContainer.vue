@@ -1,41 +1,79 @@
 <template>
   <section class="dashboard-container export-container">
     <h3>데이터 내보내기</h3>
-    <p>해당 정보를 다운로드 받으세요</p>
-    <button @click="exportToExcel" class="export-btn">엑셀 리포트 저장</button>
+    <p>현재 대시보드 화면을 PDF로 저장하세요.</p>
+    <button @click="exportToPdf" class="export-btn">PDF 리포트 저장</button>
   </section>
 </template>
 
 <script setup>
-import { defineProps } from "vue";
-import * as XLSX from "xlsx"; // xlsx 라이브러리 임포트
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-const props = defineProps({ users: Array });
+// PDF 내보내기 함수
+async function exportToPdf() {
+  // 1. PDF로 변환할 DOM 요소를 선택합니다.
+  const reportContent = document.getElementById("dashboard-content");
+  if (!reportContent) {
+    alert("내보낼 데이터가 없습니다.");
+    return;
+  }
 
-function getUserGrade(participationCount) {
-  if (participationCount === 0) return { name: "미참여", icon: "👻" };
-  if (participationCount <= 3) return { name: "신입", icon: "🐥" };
-  if (participationCount < 10) return { name: "꾸준", icon: "📈" };
-  return { name: "열혈", icon: "🔥" };
-}
+  try {
+    // 2. html2canvas를 사용해 선택한 요소를 canvas로 변환합니다.
+    const canvas = await html2canvas(reportContent, {
+      scale: 2, // 해상도를 2배로 높여 더 선명한 이미지를 얻습니다.
+      useCORS: true, // CORS 이슈가 발생할 수 있는 이미지가 있다면 필요합니다.
+    });
 
-function exportToExcel() {
-  const usersWithGrades = props.users.map((user) => ({
-    ...user,
-    grade: getUserGrade(user.participationCount),
-  }));
-  const dataToExport = usersWithGrades.map((user) => ({
-    이름: user.name,
-    등급: `${user.grade.icon} ${user.grade.name}`,
-    "참여 횟수": user.participationCount,
-    "최종 접속일": user.lastAccessDate,
-    "최종 참여일": user.lastParticipationDate,
-    자기소개: user.introduction,
-  }));
-  // 'window.XLSX' 대신 'XLSX' 사용
-  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "사용자 데이터");
-  XLSX.writeFile(workbook, "사용자_분석_리포트.xlsx");
+    // 3. 캔버스에서 이미지 데이터 URL을 얻습니다. (PNG 형식)
+    const imgData = canvas.toDataURL("image/png");
+
+    // 4. jsPDF를 사용해 새 PDF 문서를 생성합니다.
+    // A4 용지 크기 (210mm x 297mm)로 설정합니다.
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    // 5. PDF에 생성 일자를 추가합니다.
+    const creationDate = `Date: ${new Date().toLocaleString("ko-KR")}`;
+    pdf.setFontSize(10);
+    pdf.text(creationDate, 10, 10); // x: 10mm, y: 10mm 위치에 텍스트 추가
+
+    // 6. PDF에 캡쳐한 이미지를 추가합니다.
+    // 생성일자 텍스트 아래에 이미지를 위치시킵니다. (y: 15mm)
+    pdf.addImage(imgData, "PNG", 0, 15, pdfWidth, pdfHeight);
+
+    // 7. PDF 파일을 저장합니다.
+    pdf.save("사용자_분석_리포트.pdf");
+  } catch (error) {
+    console.error("PDF 생성 중 오류가 발생했습니다:", error);
+    alert("리포트 생성에 실패했습니다.");
+  }
 }
 </script>
+
+<style scoped>
+/* 스타일은 기존과 동일합니다. */
+.export-container {
+  max-height: none;
+  text-align: center;
+}
+.export-btn {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  margin-top: 16px;
+}
+.export-btn:hover {
+  background-color: #2c3e50;
+}
+</style>
