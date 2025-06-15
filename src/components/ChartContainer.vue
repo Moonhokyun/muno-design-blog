@@ -7,6 +7,9 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch, ref, defineProps } from "vue";
+import { Chart, registerables } from "chart.js";
+Chart.register(...registerables);
+
 const props = defineProps({ users: Array });
 let chartInstance = null;
 const chartRef = ref(null);
@@ -31,7 +34,8 @@ function renderChart() {
   if (chartInstance) chartInstance.destroy();
   const ctx = chartRef.value.getContext("2d");
   const gradeCounts = getGradeCounts(props.users);
-  chartInstance = new window.Chart(ctx, {
+  chartInstance = new Chart(ctx, {
+    // 'window.Chart' 대신 'Chart' 사용
     type: "bar",
     data: {
       labels: Object.keys(gradeCounts),
