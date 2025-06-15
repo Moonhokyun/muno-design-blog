@@ -35,6 +35,7 @@ function renderChart() {
   const ctx = chartRef.value.getContext("2d");
   const gradeCounts = getGradeCounts(props.users);
   chartInstance = new Chart(ctx, {
+    // 'window.Chart' 대신 'Chart' 사용
     type: "bar",
     data: {
       labels: Object.keys(gradeCounts),
