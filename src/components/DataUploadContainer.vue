@@ -81,9 +81,6 @@ function loadDummy() {
 </script>
 
 <style scoped>
-.file-input-container {
-  max-height: none;
-}
 .subtitle {
   text-align: center;
   margin-bottom: 24px;
@@ -91,12 +88,13 @@ function loadDummy() {
 }
 .method-container {
   display: flex;
+  justify-content: center;
   gap: 24px;
   width: 100%;
   flex-wrap: wrap;
 }
 .method-box {
-  flex: 1;
+  flex: 1 1 0; /* flex-grow, flex-shrink, flex-basis */
   border: 1px solid var(--light-gray-color);
   border-radius: var(--border-radius);
   padding: 24px;
@@ -104,8 +102,9 @@ function loadDummy() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 300px;
   justify-content: space-between;
+  min-width: 250px; /* 최소 너비 지정 */
+  max-width: 300px; /* 최대 너비 지정 */
 }
 .method-box h3 {
   margin-top: 0;
@@ -118,10 +117,10 @@ function loadDummy() {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
   margin-top: auto;
   padding-top: 20px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .file-info {
   margin-top: 16px;
@@ -129,16 +128,21 @@ function loadDummy() {
   color: #666;
   height: 20px;
 }
-.prompt-btn {
-  background-color: var(--secondary-color);
-  color: white;
-  padding: 12px 24px;
-  border: none;
+.prompt-btn,
+.upload-btn,
+.template-btn {
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
   transition: background-color 0.3s ease;
+  border: none;
+  text-decoration: none;
+  color: white;
+}
+.prompt-btn {
+  background-color: var(--secondary-color);
   width: 100%;
 }
 .prompt-btn:hover {
@@ -146,37 +150,17 @@ function loadDummy() {
 }
 .upload-btn {
   background-color: var(--primary-color);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  width: 100%;
 }
 .upload-btn input[type="file"] {
   display: none;
 }
 .template-btn {
   background-color: #6c757d;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  text-decoration: none;
   display: inline-block;
-  transition: background-color 0.3s ease;
-  width: 100%;
 }
 .template-btn:hover {
   background-color: #5a6268;
 }
-
-/* 예시 데이터 링크 스타일 */
 .dummy-link-wrapper {
   margin-top: 24px;
   text-align: center;
@@ -189,5 +173,13 @@ function loadDummy() {
 }
 .dummy-data-link:hover {
   color: var(--primary-color);
+}
+
+/* 뷰포트 너비가 650px 이하일 때 적용될 스타일 */
+@media (max-width: 650px) {
+  .method-box {
+    min-width: unset;
+    flex-basis: 100%; /* 너비를 100%로 만들어 세로로 쌓이게 합니다. */
+  }
 }
 </style>
