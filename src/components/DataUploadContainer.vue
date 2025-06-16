@@ -32,7 +32,7 @@
       <div class="method-box">
         <h3>방법 2</h3>
         <p class="description">
-          사용자 정보 이미지를 AI에게 전달하여 받은 엑셀/CSV 파일을 업로드
+          사용자 정보 이미지를 AI에게 전달하여 받은 엑셀 파일을 업로드
         </p>
         <div class="button-group">
           <button class="prompt-btn" @click="showPromptModal">
@@ -83,19 +83,20 @@ function loadDummy() {
 <style scoped>
 .subtitle {
   text-align: center;
-  margin-bottom: 24px;
-  color: #666;
+  color: var(--color-gray);
+  margin-block-start: 0;
+  margin-block-end: 0;
+  text-align: left;
 }
 .method-container {
   display: flex;
-  justify-content: center;
-  gap: 24px;
+  gap: var(--size-large);
   width: 100%;
   flex-wrap: wrap;
 }
 .method-box {
-  flex: 1 1 0; /* flex-grow, flex-shrink, flex-basis */
-  border: 1px solid var(--light-gray-color);
+  flex: 1;
+  border: 1px solid var(--color-gray);
   border-radius: var(--border-radius);
   padding: 24px;
   text-align: center;
@@ -103,7 +104,6 @@ function loadDummy() {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-width: 250px; /* 최소 너비 지정 */
   max-width: 300px; /* 최대 너비 지정 */
 }
 .method-box h3 {
@@ -124,8 +124,7 @@ function loadDummy() {
 }
 .file-info {
   margin-top: 16px;
-  font-size: 14px;
-  color: #666;
+  color: var(--color-gray);
   height: 20px;
 }
 .prompt-btn,
@@ -142,18 +141,13 @@ function loadDummy() {
   color: white;
 }
 .prompt-btn {
-  background-color: var(--secondary-color);
+  background-color: var(--color-primary);
   width: 100%;
 }
 .prompt-btn:hover {
   background-color: #2c3e50;
 }
-.upload-btn {
-  background-color: var(--primary-color);
-}
-.upload-btn input[type="file"] {
-  display: none;
-}
+
 .template-btn {
   background-color: #6c757d;
   display: inline-block;
@@ -162,7 +156,6 @@ function loadDummy() {
   background-color: #5a6268;
 }
 .dummy-link-wrapper {
-  margin-top: 24px;
   text-align: center;
 }
 .dummy-data-link {
@@ -174,12 +167,31 @@ function loadDummy() {
 .dummy-data-link:hover {
   color: var(--primary-color);
 }
-
 /* 뷰포트 너비가 650px 이하일 때 적용될 스타일 */
 @media (max-width: 650px) {
   .method-box {
-    min-width: unset;
-    flex-basis: 100%; /* 너비를 100%로 만들어 세로로 쌓이게 합니다. */
+    max-width: unset;
+    flex-basis: 100%;
+    padding: 20px;
+    .button-group {
+      flex-direction: column;
+      align-items: center;
+      .upload-btn,
+      .template-btn {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+    }
+  }
+}
+@media (max-width: 480px) {
+  .method-container {
+    flex-direction: column;
+    align-items: center;
+    .method-box {
+      min-width: unset;
+    }
   }
 }
 </style>

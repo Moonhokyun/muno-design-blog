@@ -17,12 +17,14 @@
           <strong>최종 참여일:</strong> {{ selectedUser.lastParticipationDate }}
         </div>
         <div class="detail-item">
-          <strong>자기소개:</strong>
+          <strong>자기소개</strong>
           <div class="introduction">{{ selectedUser.introduction }}</div>
         </div>
       </div>
       <div v-else class="user-detail-placeholder">
-        <p>테이블에서 사용자를 선택하면 상세 정보를 볼 수 있습니다.</p>
+        <p class="subtitle">
+          테이블에서 사용자를 선택하면 상세 정보를 볼 수 있습니다.
+        </p>
       </div>
     </div>
   </section>
@@ -32,3 +34,16 @@
 import { defineProps } from "vue";
 const props = defineProps({ selectedUser: Object });
 </script>
+
+<style scoped>
+/* 스타일은 기존과 동일합니다. */
+.user-detail-placeholder {
+  .subtitle {
+    text-align: center;
+    color: var(--color-gray);
+    margin-block-start: 0;
+    margin-block-end: 0;
+    text-align: left;
+  }
+}
+</style>
