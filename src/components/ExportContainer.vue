@@ -1,7 +1,7 @@
 <template>
   <section class="dashboard-container export-container">
     <h3>데이터 내보내기</h3>
-    <p>현재 대시보드 화면을 PDF로 저장하세요.</p>
+    <p class="subtitle">현재 대시보드 화면을 PDF로 저장하세요.</p>
     <button @click="exportToPdf" class="export-btn">PDF 리포트 저장</button>
   </section>
 </template>
@@ -60,20 +60,12 @@ async function exportToPdf() {
 .export-container {
   max-height: none;
   text-align: center;
-}
-.export-btn {
-  background-color: var(--secondary-color);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  margin-top: 16px;
-}
-.export-btn:hover {
-  background-color: #2c3e50;
+  .subtitle {
+    text-align: center;
+    color: var(--color-gray);
+    margin-block-start: 0;
+    margin-block-end: 0;
+    text-align: left;
+  }
 }
 </style>

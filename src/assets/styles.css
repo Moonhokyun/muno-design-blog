@@ -2,22 +2,62 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
 
 :root {
-  --primary-color: #42b883;
-  --secondary-color: #35495e;
-  --background-color: #f4f7f9;
-  --container-bg-color: #ffffff;
-  --text-color: #333;
-  --light-gray-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --color-primary: #009eee;
+  --color-primary-opacity: #009fee3e;
+  --color-secondary: #00547f;
+  --color-black: #181818;
+  --color-black-opacity: #1818180a;
+  --color-gray: #6f6f6f;
+  --color-white: #ffffff;
+  --color-white-opacity: #ffffff0a;
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div,
+  a,
+  li,
+  ul,
+  ol,
+  label,
+  input,
+  textarea,
+  button {
+    color: var(--color-white);
+  }
+  --color-light-gray: #e0e0e0; /* 기존에 있던 색상 유지 */
+  --color-background: #121212; /* 기존에 있던 색상 유지 */
+  --shadow-color: rgba(0, 0, 0, 0.1); /* 기존에 있던 색상 유지 */
+
+  /* --- 2. Sizing Units --- */
+  --size-x-small: 4px;
+  --size-small: 8px;
+  --size-medium: 12px;
+  --size-large: 16px;
+  --size-x-large: 20px;
+
+  /* --- 3. Font Styles --- */
+  --font-size-default: 16px;
+  --font-size-medium: 14px;
+  --font-size-small: 12px;
+  --font-size-large: 20px;
+  --font-size-x-large: 28px;
+  --line-height-default: 1.5;
+
+  /* --- 기존 값들 --- */
   --border-radius: 12px;
 }
 
 body {
   font-family: "Noto Sans KR", sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--color-background);
+  color: var(--color-black);
   margin: 0;
-  padding: 20px;
   display: flex;
   justify-content: center;
 }
@@ -27,34 +67,44 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: var(--size-large);
 }
 
 h1 {
-  color: var(--secondary-color);
+  color: var(--color-secondary);
   font-weight: 700;
   text-align: center;
+  font-size: var(--font-size-x-large); /* 변수 사용 */
 }
 
 h2,
 h3 {
-  color: var(--secondary-color);
-  margin-top: 0;
+  text-align: left;
+  color: var(--color-secondary);
+  margin: 0;
   font-weight: 700;
+  font-size: var(--font-size-large); /* 변수 사용 */
 }
-
+[class*="flex"],
+[class*="Flex"],
+[class*="row"],
+[class*="Row"] {
+  display: flex;
+  gap: var(--size-large);
+}
 /* --- Common Container Style --- */
 .dashboard-container {
-  background-color: var(--container-bg-color);
   padding: 24px;
   border-radius: var(--border-radius);
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 var(--size-x-small) var(--size-medium) var(--shadow-color); /* 변수 사용 */
   width: 100%;
   max-width: 800px;
   max-height: 400px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  gap: var(--size-large);
+  background-color: var(--color-white-opacity);
 }
 
 /* --- File Input Container --- */
@@ -64,26 +114,26 @@ h3 {
 }
 
 .upload-btn {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 12px 24px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: var(--size-medium) 24px; /* 변수 사용 */
   border: none;
-  border-radius: 8px;
+  border-radius: var(--size-small); /* 변수 사용 */
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-default); /* 변수 사용 */
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
 .upload-btn:hover {
-  background-color: #36a574;
+  background-color: var(--color-primary-opacity);
 }
 .upload-btn input[type="file"] {
   display: none;
 }
 .file-info {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #666;
+  margin-top: var(--size-medium); /* 변수 사용 */
+  font-size: var(--font-size-small); /* 변수 사용 */
+  color: var(--color-gray);
 }
 
 /* --- Main Content Area --- */
@@ -92,7 +142,7 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: var(--size-large);
 }
 
 /* --- Chart Container --- */
@@ -102,36 +152,59 @@ h3 {
 
 /* --- Table Container --- */
 .table-scroll-wrapper {
-  overflow-y: auto; /* Makes table scrollable within the container */
+  overflow-y: auto;
+  border-color: var(--color-gray);
+}
+.table-scroll-wrapper::-webkit-scrollbar {
+  width: 14px;
+  border-radius: 10px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #d4d4d4;
+  background-clip: padding-box;
+  border: 4px solid transparent;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--font-size-medium); /* 변수 사용 */
+  border-color: var(--color-gray);
 }
 th,
 td {
-  padding: 12px 16px;
+  padding: var(--size-medium) var(--size-large); /* 변수 사용 */
   text-align: left;
-  border-bottom: 1px solid var(--light-gray-color);
+  border-bottom: 1px solid var(--color-gray);
 }
 th {
-  background-color: #f9fafb;
+  background-color: var(--color-primary);
   font-weight: 500;
-  color: var(--secondary-color);
+  color: var(--color-white);
   position: sticky;
   top: 0;
+}
+th:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+th:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 tbody tr {
   cursor: pointer;
   transition: background-color 0.2s ease;
+  border-radius: 10px;
 }
 tbody tr:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-primary-opacity);
 }
 tbody tr.selected {
-  background-color: #e0f2f1;
+  background-color: var(--color-primary-opacity);
 }
 
 /* --- User Detail Container --- */
@@ -142,27 +215,23 @@ tbody tr.selected {
 .user-detail-scroll-wrapper {
   overflow-y: auto;
 }
-
-.user-detail-placeholder {
-  text-align: center;
-  color: #888;
-}
 .user-detail-content .detail-item {
-  margin-bottom: 12px;
-  font-size: 16px;
+  color: var(--color-white);
+  margin-bottom: var(--size-medium); /* 변수 사용 */
+  font-size: var(--font-size-default); /* 변수 사용 */
 }
 .user-detail-content .detail-item strong {
-  color: var(--secondary-color);
+  color: var(--color-gray);
   display: inline-block;
   width: 100px;
 }
 .user-detail-content .introduction {
-  margin-top: 16px;
-  padding: 12px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  margin-top: var(--size-large); /* 변수 사용 */
+  padding: var(--size-medium); /* 변수 사용 */
+  background-color: var(--color-secondary);
+  border-radius: var(--size-small); /* 변수 사용 */
   white-space: pre-wrap;
-  line-height: 1.6;
+  line-height: var(--line-height-default); /* 변수 사용 */
 }
 
 /* --- Export Container --- */
@@ -171,17 +240,17 @@ tbody tr.selected {
   text-align: center;
 }
 .export-btn {
-  background-color: var(--secondary-color);
-  color: white;
-  padding: 12px 24px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: var(--size-medium) 24px; /* 변수 사용 */
   border: none;
-  border-radius: 8px;
+  border-radius: var(--size-small); /* 변수 사용 */
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-default); /* 변수 사용 */
   font-weight: 500;
   transition: background-color 0.3s ease;
-  margin-top: 16px;
+  margin-top: var(--size-large); /* 변수 사용 */
 }
 .export-btn:hover {
-  background-color: #2c3e50;
+  background-color: var(--color-primary-opacity);
 }
