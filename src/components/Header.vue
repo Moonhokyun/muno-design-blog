@@ -3,7 +3,7 @@
     <div v-if="isMenuOpen" class="menu-backdrop" @click="closeMenu"></div>
 
     <div class="header-content">
-      <router-link to="/" class="logo" @click="closeMenu">🚀</router-link>
+      <router-link to="/" class="logo" @click="goHomeAndReset">🚀</router-link>
 
       <div class="desktop-menu">
         <nav>
@@ -39,6 +39,8 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
+// 1단계에서 만든 viewState를 불러옵니다.
+import { viewState } from "../store/viewState";
 
 const isMenuOpen = ref(false);
 const route = useRoute();
@@ -49,6 +51,14 @@ const toggleMenu = () => {
 
 const closeMenu = () => {
   isMenuOpen.value = false;
+};
+
+// 로고를 클릭했을 때 실행할 새로운 함수
+const goHomeAndReset = () => {
+  // 메뉴를 닫고,
+  closeMenu();
+  // HomeView의 상태를 초기화하는 함수를 호출합니다.
+  viewState.resetHomeView();
 };
 
 // 라우트(페이지)가 변경될 때마다 메뉴를 닫도록 수정
