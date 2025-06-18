@@ -1,7 +1,6 @@
 <template>
   <div class="home-container">
     <aside class="sidebar">
-      <h3>카테고리</h3>
       <ul>
         <li :class="{ active: selectedTag === '전체' }">
           <a href="#" @click.prevent="selectTag('전체')">전체</a>
@@ -228,10 +227,12 @@ onUnmounted(() => {
   justify-content: space-between; /* 내부 요소를 위아래로 분산 */
 }
 .card-footer {
-    display: flex;
+    display: flex
+;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-top: 10px;
+    gap: var(--size-default);
 }
 .creation-date {
     font-size: 13px;
@@ -254,9 +255,9 @@ onUnmounted(() => {
     display: inline-block;
     background-color: var(--color-primary);
     color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
+    padding: 4px 8px;
     text-decoration: none;
+    font-size: var(--font-size-default);
     font-weight: 500;
     transition: background-color 0.3s, transform 0.2s;
 }
@@ -277,12 +278,12 @@ onUnmounted(() => {
 .tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--size-default);
 }
 .tag {
   background-color: var(--color-secondary);
   color: white;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
 }
@@ -291,30 +292,36 @@ onUnmounted(() => {
 .home-container {
   display: flex;
   width: 100%;
-  height: calc(100vh - 80px);
+  height: 100%; /* 뷰포트 높이에서 헤더 높이를 뺀 값 */
+  /* main-content 스크롤을 웹 기본 창으로 옮기기 위해 overflow-y를 제거 */
+
 }
 .sidebar {
   width: 200px;
+  min-width: 200px;
   background-color: #1a1a1a;
-  padding: 20px;
+  padding: var(--size-default);
   color: white;
-  height: 100%;
   box-sizing: border-box;
+  font-size: var(--font-size-default);
+
+  /* 스크롤 시 따라오면서 상단 고정 */
+  position: sticky;
+  top: 0; /* 헤더가 있다면 헤더 아래에 위치 */
+  height: 100vh; /* 뷰포트 높이만큼 */
+  overflow-y: auto; /* 사이드바 내용이 길어지면 사이드바 자체 스크롤 */
 }
-.sidebar h3 {
-  color: var(--color-primary);
-  margin-top: 0;
-}
+
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 .sidebar li a {
   color: white;
   text-decoration: none;
   display: block;
-  padding: 10px;
-  border-radius: 8px;
+  padding: var(--size-default);
   transition: background-color 0.3s;
 }
 .sidebar li a:hover {
@@ -322,17 +329,17 @@ onUnmounted(() => {
 }
 .main-content {
   flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  height: 100%;
+  padding: var(--size-default);
+  /* overflow-y: auto; 제거 */
+  height: auto; /* 내용 길이에 따라 자연스럽게 늘어나도록 */
   box-sizing: border-box;
 }
 .contents-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  grid-column-gap: 20px;
-  grid-row-gap: 20px;
+  grid-column-gap: var(--size-default);
+  grid-row-gap: var(--size-default);
   height: 100%;
 }
 .card-container {
@@ -362,7 +369,7 @@ onUnmounted(() => {
 .card-description {
   width: 100%;
   height: 50%;
-  padding: 15px;
+  padding: var(--size-default);
   box-sizing: border-box;
   background-color: #2f1d58;
   display: flex;
@@ -375,14 +382,14 @@ onUnmounted(() => {
 .card-description p {
     margin: 0;
     flex-grow: 1;
-    font-size: 14px;
+    font-size: var(--font-size-default);
 }
 .blog-detail-view { color: white; }
 .blog-header {
   display: grid;
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto auto;
-  gap: 20px;
+  gap: var(--size-default);
   align-items: center;
   margin-bottom: 20px;
 }
@@ -392,10 +399,8 @@ onUnmounted(() => {
   background: var(--color-primary);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-default);
 }
 .thumbnail-container {
   grid-column: 1 / 2;
@@ -418,6 +423,9 @@ onUnmounted(() => {
 .blog-content {
   line-height: 1.8;
   margin: 20px 0;
+  p {
+    font-size: var(--font-size-default);
+  }
 }
 hr {
   border: none;
@@ -427,15 +435,18 @@ hr {
 .blog-navigation {
   display: flex;
   justify-content: space-between;
+  font-size: var(--font-size-default);
 }
 .blog-navigation button {
     background-color: #333;
     border: 1px solid var(--color-gray);
-    padding: 10px 20px;
+    padding: 8px 12px;
+    font-size: inherit;
 }
 .blog-navigation button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    font-size: inherit;
 }
 .related-content .contents-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -455,10 +466,10 @@ hr {
     height: 120px;
     object-fit: cover;
 }
-.card-description-small { padding: 10px; color: white; }
+.card-description-small { padding: var(--size-default); color: white; }
 .card-description-small h4 {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--font-size-default);
     color: var(--color-primary);
 }
 @media (max-width: 1024px) {
@@ -468,14 +479,57 @@ hr {
   }
 }
 @media (max-width: 768px) {
-  .home-container { flex-direction: column; height: auto; }
-  .sidebar { width: 100%; height: auto; border-bottom: 1px solid var(--color-gray); }
-  .main-content { height: auto; }
-  .contents-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
-  .blog-header { grid-template-columns: 1fr; }
-  .thumbnail-container, .summary-container { grid-column: 1 / -1; text-align: center; }
-  .thumbnail-container { grid-row: 2; margin-bottom: 10px; }
-  .summary-container { grid-row: 3; }
+  .home-container {
+    flex-direction: column;
+    height: auto;
+    /* 뷰포트가 작아질 때는 .home-container 자체의 높이 제한을 해제 */
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid var(--color-gray);
+    position: static; /* 스크롤 시 사라지도록 static으로 변경 */
+    height: auto; /* 모바일에서는 높이 자동 조정 */
+    overflow-y: visible; /* 스크롤바 비활성화 */
+  }
+  .sidebar h3 {
+    display: none; /* h3 카테고리 label 사라짐 */
+  }
+  .sidebar ul {
+    display: flex; /* sidebar 내부에 ul 을 display: flex로 가로로 정렬함. */
+    flex-wrap: wrap; /* 항목이 많을 경우 줄바꿈 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: var(--size-default); /* 항목 간 간격 */
+  }
+  .sidebar li {
+    flex-grow: 1; /* 항목들이 가능한 공간을 채우도록 */
+    max-width: 150px; /* 각 태그 버튼의 최대 너비 */
+  }
+  .sidebar li a {
+    text-align: center;
+    padding: 4px 8px;/* 패딩 조정 */
+  }
+  .main-content {
+    height: auto;
+  }
+  .contents-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .blog-header {
+    grid-template-columns: 1fr;
+  }
+  .thumbnail-container, .summary-container {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  .thumbnail-container {
+    grid-row: 2;
+    margin-bottom: 10px;
+  }
+  .summary-container {
+    grid-row: 3;
+  }
 }
-
 </style>

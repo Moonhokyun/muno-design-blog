@@ -73,7 +73,7 @@ watch(
 <style scoped>
 .app-header {
   width: 100%;
-  padding: var(--size-medium) 30px;
+  padding: var(--size-default) 30px;
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-gray);
   box-sizing: border-box;
@@ -97,11 +97,11 @@ watch(
 .desktop-menu {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: var(--size-default);
 }
 .desktop-menu nav {
   display: flex;
-  gap: 20px;
+  gap: var(--size-default);
 }
 .desktop-menu a {
   text-decoration: none;
@@ -118,7 +118,7 @@ watch(
 }
 .project-title {
   color: var(--color-primary);
-  font-size: var(--font-size-medium);
+  font-size: var(--font-size-default);
 }
 
 /* --- 모달 및 드롭다운 메뉴 스타일 --- */
@@ -130,13 +130,13 @@ watch(
   left: 0;
   width: 100%;
   background-color: var(--color-background);
-  padding: var(--size-large);
+  padding: var(--size-default);
   box-sizing: border-box;
   box-shadow: 0 4px 6px var(--shadow-color);
 
   display: flex;
   flex-direction: column;
-  gap: var(--size-large);
+  gap: var(--size-default);
 
   z-index: 1002; /* dim 배경 위에 오도록 z-index 추가 */
 
@@ -160,7 +160,7 @@ watch(
   color: var(--color-white);
   font-weight: 500;
   font-size: var(--font-size-default);
-  padding: var(--size-small) 0;
+  padding: var(--size-default) 0;
 }
 .dropdown-menu a:hover {
   color: var(--color-primary);
@@ -169,7 +169,7 @@ watch(
 .dropdown-menu nav {
   display: flex;
   flex-direction: column;
-  gap: var(--size-medium);
+  gap: var(--size-default);
 }
 
 /* --- 반응형 처리 --- */

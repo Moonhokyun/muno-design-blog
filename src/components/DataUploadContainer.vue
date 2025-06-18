@@ -90,7 +90,7 @@ function loadDummy() {
 }
 .method-container {
   display: flex;
-  gap: var(--size-large);
+  gap: var(--size-default);
   width: 100%;
   flex-wrap: wrap;
 }
@@ -98,7 +98,7 @@ function loadDummy() {
   flex: 1;
   border: 1px solid var(--color-gray);
   border-radius: var(--border-radius);
-  padding: 24px;
+  padding: var(--size-default);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -117,7 +117,7 @@ function loadDummy() {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--size-default);
   margin-top: auto;
   padding-top: 20px;
   flex-wrap: nowrap;
@@ -130,7 +130,7 @@ function loadDummy() {
 .prompt-btn,
 .upload-btn,
 .template-btn {
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
@@ -172,7 +172,7 @@ function loadDummy() {
   .method-box {
     max-width: unset;
     flex-basis: 100%;
-    padding: 20px;
+    padding: var(--size-default);
     .button-group {
       flex-direction: column;
       align-items: center;
