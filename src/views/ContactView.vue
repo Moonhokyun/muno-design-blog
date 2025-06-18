@@ -6,7 +6,7 @@
 </template>
 <style scoped>
 .page-container {
-  padding: 20px;
+  padding: var(--size-default);
   text-align: center;
 }
 </style>

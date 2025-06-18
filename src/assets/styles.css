@@ -35,18 +35,10 @@
   --shadow-color: rgba(0, 0, 0, 0.1); /* 기존에 있던 색상 유지 */
 
   /* --- 2. Sizing Units --- */
-  --size-x-small: 4px;
-  --size-small: 8px;
-  --size-medium: 12px;
-  --size-large: 16px;
-  --size-x-large: 20px;
+  --size-default: 0;
 
   /* --- 3. Font Styles --- */
-  --font-size-default: 16px;
-  --font-size-medium: 14px;
-  --font-size-small: 12px;
-  --font-size-large: 20px;
-  --font-size-x-large: 28px;
+  --font-size-default: 12px;
   --line-height-default: 1.5;
 
   /* --- 기존 값들 --- */
@@ -67,14 +59,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-large);
+  gap: var(--size-default);
 }
 
 h1 {
   color: var(--color-secondary);
   font-weight: 700;
   text-align: center;
-  font-size: var(--font-size-x-large); /* 변수 사용 */
+  font-size: var(--font-size-default); /* 변수 사용 */
 }
 
 h2,
@@ -83,27 +75,27 @@ h3 {
   color: var(--color-secondary);
   margin: 0;
   font-weight: 700;
-  font-size: var(--font-size-large); /* 변수 사용 */
+  font-size: var(--font-size-default); /* 변수 사용 */
 }
 [class*="flex"],
 [class*="Flex"],
 [class*="row"],
 [class*="Row"] {
   display: flex;
-  gap: var(--size-large);
+  gap: var(--size-default);
 }
 /* --- Common Container Style --- */
 .dashboard-container {
-  padding: 24px;
+  padding: var(--size-default);
   border-radius: var(--border-radius);
-  box-shadow: 0 var(--size-x-small) var(--size-medium) var(--shadow-color); /* 변수 사용 */
+  box-shadow: 0 var(--size-default) var(--size-default) var(--shadow-color); /* 변수 사용 */
   width: 100%;
   max-width: 800px;
   max-height: 400px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: var(--size-large);
+  gap: var(--size-default);
   background-color: var(--color-white-opacity);
 }
 
@@ -116,9 +108,9 @@ h3 {
 .upload-btn {
   background-color: var(--color-primary);
   color: var(--color-white);
-  padding: var(--size-medium) 24px; /* 변수 사용 */
+  padding: var(--size-default) 24px; /* 변수 사용 */
   border: none;
-  border-radius: var(--size-small); /* 변수 사용 */
+  border-radius: var(--size-default); /* 변수 사용 */
   cursor: pointer;
   font-size: var(--font-size-default); /* 변수 사용 */
   font-weight: 500;
@@ -131,8 +123,8 @@ h3 {
   display: none;
 }
 .file-info {
-  margin-top: var(--size-medium); /* 변수 사용 */
-  font-size: var(--font-size-small); /* 변수 사용 */
+  margin-top: var(--size-default); /* 변수 사용 */
+  font-size: var(--font-size-default); /* 변수 사용 */
   color: var(--color-gray);
 }
 
@@ -142,7 +134,7 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-large);
+  gap: var(--size-default);
 }
 
 /* --- Chart Container --- */
@@ -170,12 +162,12 @@ h3 {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-medium); /* 변수 사용 */
+  font-size: var(--font-size-default); /* 변수 사용 */
   border-color: var(--color-gray);
 }
 th,
 td {
-  padding: var(--size-medium) var(--size-large); /* 변수 사용 */
+  padding: var(--size-default) var(--size-default); /* 변수 사용 */
   text-align: left;
   border-bottom: 1px solid var(--color-gray);
 }
@@ -217,7 +209,7 @@ tbody tr.selected {
 }
 .user-detail-content .detail-item {
   color: var(--color-white);
-  margin-bottom: var(--size-medium); /* 변수 사용 */
+  margin-bottom: var(--size-default); /* 변수 사용 */
   font-size: var(--font-size-default); /* 변수 사용 */
 }
 .user-detail-content .detail-item strong {
@@ -226,10 +218,10 @@ tbody tr.selected {
   width: 100px;
 }
 .user-detail-content .introduction {
-  margin-top: var(--size-large); /* 변수 사용 */
-  padding: var(--size-medium); /* 변수 사용 */
+  margin-top: var(--size-default); /* 변수 사용 */
+  padding: var(--size-default); /* 변수 사용 */
   background-color: var(--color-secondary);
-  border-radius: var(--size-small); /* 변수 사용 */
+  border-radius: var(--size-default); /* 변수 사용 */
   white-space: pre-wrap;
   line-height: var(--line-height-default); /* 변수 사용 */
 }
@@ -242,14 +234,14 @@ tbody tr.selected {
 .export-btn {
   background-color: var(--color-primary);
   color: var(--color-white);
-  padding: var(--size-medium) 24px; /* 변수 사용 */
+  padding: var(--size-default) 24px; /* 변수 사용 */
   border: none;
-  border-radius: var(--size-small); /* 변수 사용 */
+  border-radius: var(--size-default); /* 변수 사용 */
   cursor: pointer;
   font-size: var(--font-size-default); /* 변수 사용 */
   font-weight: 500;
   transition: background-color 0.3s ease;
-  margin-top: var(--size-large); /* 변수 사용 */
+  margin-top: var(--size-default); /* 변수 사용 */
 }
 .export-btn:hover {
   background-color: var(--color-primary-opacity);

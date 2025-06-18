@@ -20,8 +20,7 @@ import Header from "./components/Header.vue";
 }
 
 .content-wrapper {
-  flex-grow: 1; /* 헤더를 제외한 나머지 공간을 모두 차지 */
-  padding: 20px;
+  flex-grow: 1;
   width: 100%;
   box-sizing: border-box;
 }

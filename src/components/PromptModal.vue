@@ -81,7 +81,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 }
 .modal-content {
   background-color: var(--color-black);
-  padding: 24px;
+  padding: var(--size-default);
   border-radius: var(--border-radius);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 90%;
@@ -101,7 +101,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 }
 .prompt-box {
   background-color: var(--color-white-opacity);
-  padding: 16px;
+  padding: var(--size-default);
   border-radius: 8px;
   white-space: pre-wrap;
   word-wrap: break-word;

@@ -148,6 +148,6 @@ function formatDate(date) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-large);
+  gap: var(--size-default);
 }
 </style>
