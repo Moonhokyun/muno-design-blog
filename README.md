@@ -1,5 +1,99 @@
-# Vue 3 + Vite
+본 프로젝트 "Muno's Design Blog"는 Vue 3와 Vite로 구축된 웹 애플리케이션입니다. 이 애플리케이션은 개인 디자인 블로그와 사용자 데이터 분석 대시보드라는 두 가지 주요 목적을 가지고 있습니다.
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### 주요 기능
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+#### Muno's 디자인 블로그
+
+- **아티클 탐색**: "UI/UX", "브랜딩", "커뮤니티 빌드 및 활동", "Design in Japan"과 같은 태그로 분류된 다양한 블로그 게시물을 탐색할 수 있습니다.
+- **아티클 상세 보기**: 제목, 작성일, 태그, 전체 내용 및 이전/다음 아티클로 이동하는 기능을 포함한 개별 블로그 게시물을 볼 수 있습니다.
+- **관련 콘텐츠**: 특정 게시물을 보는 동안 다른 관련 아티클을 발견할 수 있습니다.
+- **피드백 통합**: 블로그 게시물에 대한 피드백을 제공하는 전용 버튼이 있습니다 (Google Form으로 연결).
+- **반응형 디자인**: 블로그 레이아웃은 모바일 기기를 포함한 다양한 화면 크기에 맞춰 조정됩니다.
+
+#### 사용자 데이터 분석 대시보드
+
+- **데이터 업로드**: `.csv` 또는 `.xlsx` 형식으로 사용자 데이터를 쉽게 업로드할 수 있습니다.
+- **더미 데이터 옵션**: 파일을 업로드할 필요 없이 빠른 탐색을 위해 예시 데이터를 로드할 수 있습니다.
+- **엑셀 생성을 위한 AI 프롬프트**: 사용자 정보 이미지를 엑셀 파일로 변환하는 AI 프롬프트를 미리 정의된 형태로 제공하여 데이터 준비를 용이하게 합니다.
+- **사용자 등급 부여**: 사용자는 참여 횟수에 따라 자동으로 등급(신입 🐥, 꾸준 📈, 열혈 🔥, 미참여 👻)이 부여됩니다.
+- **대화형 차트**: 등급별 사용자 분포를 동적인 막대 차트로 시각화합니다.
+- **정렬 가능한 테이블**: "전체 유저 정보" 테이블에서 이름, 등급, 최종 접속일, 최종 참여일 등 모든 사용자 정보를 볼 수 있습니다. 테이블에서 사용자를 선택하여 상세 정보를 볼 수 있습니다.
+- **사용자 상세 보기**: 선택된 사용자의 이름, 등급, 접속일, 참여일, 자기소개 등 포괄적인 상세 정보를 볼 수 있습니다.
+- **PDF 내보내기**: "데이터 내보내기" 섹션에서 "PDF 리포트 저장" 버튼을 클릭하여 현재 대시보드 화면을 PDF 보고서로 다운로드할 수 있습니다.
+
+### 사용된 기술
+
+- **프론트엔드 프레임워크**: Vue 3
+- **빌드 도구**: Vite
+- **라우팅**: Vue Router
+- **차트**: Chart.js
+- **Excel/CSV 처리**: XLSX (SheetJS)
+- **PDF 생성**: jsPDF
+- **HTML to Canvas**: html2canvas
+
+### 설치 및 시작하기
+
+1.  **리포지토리 클론**:
+
+    ```bash
+    git clone [repository-url]
+    cd muno-design-blog
+    ```
+
+2.  **의존성 설치**:
+
+    ```bash
+    npm install
+    # 또는 yarn install
+    # 또는 pnpm install
+    ```
+
+3.  **개발 서버 실행**:
+
+    ```bash
+    npm run dev
+    # 또는 yarn dev
+    # 또는 pnpm dev
+    ```
+
+    개발 서버가 시작되며, 일반적으로 `http://localhost:5173`에서 접근할 수 있습니다.
+
+4.  **프로덕션 빌드**:
+
+    ```bash
+    npm run build
+    # 또는 yarn build
+    # 또는 pnpm build
+    ```
+
+    이 명령은 프로덕션을 위한 애플리케이션을 정적 파일로 번들링합니다.
+
+5.  **프로덕션 빌드 미리보기**:
+
+    ```bash
+    npm run preview
+    # 또는 yarn preview
+    # 또는 pnpm preview
+    ```
+
+### 사용법
+
+#### 블로그 섹션
+
+- 홈페이지(일반적으로 `/`)로 이동합니다.
+- 사이드바를 사용하여 "UI/UX", "브랜딩" 등 태그별로 블로그 게시물을 필터링합니다.
+- 카드를 클릭하여 블로그 게시물의 상세 내용을 봅니다.
+- 상세 게시물 내에서 "뒤로 가기" 버튼 또는 탐색 버튼을 사용하여 아티클 간에 이동합니다.
+
+#### 대시보드 섹션
+
+- 대시보드 페이지(일반적으로 `/dashboard`)로 이동합니다.
+- **데이터 업로드**:
+  - "파일 첨부" 버튼을 클릭하여 CSV 또는 XLSX 파일을 업로드합니다.
+  - "엑셀 양식 다운로드"를 클릭하여 템플릿을 다운로드할 수 있습니다.
+  - "프롬프트 보기 및 복사"를 클릭하여 AI 프롬프트를 가져와 사용자 정보 이미지를 엑셀 형식으로 변환하는 데 사용할 수 있습니다.
+- **더미 데이터 로드**: "예시 데이터로 둘러보기"를 클릭하여 미리 정의된 더미 데이터로 대시보드를 채웁니다.
+- **사용자 상세 보기**: "전체 유저 정보" 테이블의 아무 행이나 클릭하여 "유저 상세보기" 섹션에서 해당 사용자의 상세 정보를 볼 수 있습니다.
+- **보고서 내보내기**: "데이터 내보내기" 섹션에서 "PDF 리포트 저장"을 클릭하여 현재 대시보드 화면의 PDF를 다운로드합니다.
+
+Vue 3 `<script setup>` SFC에 대한 자세한 내용은 [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup)를 참조하십시오. Vue IDE 지원에 대해서는 [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support)를 참조하십시오.

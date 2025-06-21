@@ -1,3 +1,33 @@
+<template>
+  <div id="dashboard-app">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">사용자 데이터 분석 대시보드</h1>
+      <p class="dashboard-description">
+        모임 내 🔥열혈 사용자와 👻유령 사용자를 구분해 보세요.
+      </p>
+    </header>
+
+    <DataUploadContainer
+      @file-uploaded="handleFileUpload"
+      @load-dummy-data="loadDummyData"
+    />
+
+    <main
+      v-if="users.length > 0"
+      id="dashboard-content"
+      class="main-content-area"
+    >
+      <ChartContainer :users="users" />
+      <TableContainer
+        :users="users"
+        :selectedUser="selectedUser"
+        @select-user="selectUser"
+      />
+      <UserDetailContainer :selectedUser="selectedUser" />
+      <ExportContainer :users="users" />
+    </main>
+  </div>
+</template>
 <script setup>
 import { ref } from "vue";
 import * as XLSX from "xlsx";
@@ -113,34 +143,6 @@ function formatDate(date) {
 }
 </script>
 
-<template>
-  <div id="dashboard-app">
-    <header>
-      <h1>사용자 데이터 분석 대시보드</h1>
-    </header>
-
-    <DataUploadContainer
-      @file-uploaded="handleFileUpload"
-      @load-dummy-data="loadDummyData"
-    />
-
-    <main
-      v-if="users.length > 0"
-      id="dashboard-content"
-      class="main-content-area"
-    >
-      <ChartContainer :users="users" />
-      <TableContainer
-        :users="users"
-        :selectedUser="selectedUser"
-        @select-user="selectUser"
-      />
-      <UserDetailContainer :selectedUser="selectedUser" />
-      <ExportContainer :users="users" />
-    </main>
-  </div>
-</template>
-
 <style scoped>
 /* 이 컴포넌트만을 위한 스타일 */
 #dashboard-app {
@@ -148,7 +150,65 @@ function formatDate(date) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
   margin: 1rem;
+  margin-top: 240px;
+  .dashboard-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 0;
+    width: 100%;
+    background: linear-gradient(90deg, #7f7fd5 0%, #86a8e7 50%, #91eae4 100%);
+    position: absolute;
+    top: 57px;
+    .dashboard-title {
+      font-size: 2.4rem;
+      color: #ffffff;
+      margin: 0;
+    }
+    .dashboard-description {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  #dashboard-app {
+    margin-top: 230px;
+    .dashboard-header {
+      .dashboard-title {
+        font-size: 2rem;
+        color: #ffffff;
+        margin: 0;
+      }
+      .dashboard-description {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #ffffff;
+        margin: 0;
+      }
+    }
+  }
+}
+@media (max-width: 480px) {
+  #dashboard-app {
+    margin-top: 0;
+    .dashboard-header {
+      position: unset;
+      padding: 64px 20px;
+      .dashboard-title {
+        font-size: 24px;
+      }
+      .dashboard-description {
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+  }
 }
 </style>
