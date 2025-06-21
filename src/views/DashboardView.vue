@@ -144,10 +144,11 @@ function formatDate(date) {
 <style scoped>
 /* 이 컴포넌트만을 위한 스타일 */
 #dashboard-app {
-  width: 100%;
+  width: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-default);
+  gap: 10px;
+  margin: 1rem;
 }
 </style>

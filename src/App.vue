@@ -2,7 +2,9 @@
   <div id="app-container">
     <Header />
     <main class="content-wrapper">
-      <router-view />
+      <transition name="fade" mode="out-in">
+        <router-view :key="$route.fullPath" />
+      </transition>
     </main>
   </div>
 </template>
@@ -23,5 +25,17 @@ import Header from "./components/Header.vue";
   flex-grow: 1;
   width: 100%;
   box-sizing: border-box;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 </style>

@@ -67,5 +67,24 @@ async function exportToPdf() {
     margin-block-end: 0;
     text-align: left;
   }
+  .export-btn {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: var(--size-default) 24px; /* 변수 사용 */
+    border: none;
+    border-radius: var(--size-default); /* 변수 사용 */
+    cursor: pointer;
+    font-size: var(--font-size-default); /* 변수 사용 */
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: var(--size-default); /* 변수 사용 */
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 8px;
+  }
+  .export-btn:hover {
+    background-color: #eee;
+    color: #000;
+  }
 }
 </style>

@@ -90,13 +90,18 @@ function loadDummy() {
 }
 .method-container {
   display: flex;
-  gap: var(--size-default);
+  gap: 16px;
   width: 100%;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .method-box {
-  flex: 1;
-  border: 1px solid var(--color-gray);
+  flex: 1 1 300px; /* grow, shrink, basis */
+  min-width: 260px; /* 최소 너비 */
+  max-width: 400px; /* 최대 너비 */
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #eee;
   border-radius: var(--border-radius);
   padding: var(--size-default);
   text-align: center;
@@ -104,7 +109,7 @@ function loadDummy() {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  max-width: 300px; /* 최대 너비 지정 */
+  padding: 16px;
 }
 .method-box h3 {
   margin-top: 0;
@@ -117,15 +122,19 @@ function loadDummy() {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: var(--size-default);
+  gap: 10px;
   margin-top: auto;
   padding-top: 20px;
   flex-wrap: nowrap;
 }
 .file-info {
+  width: inherit;
   margin-top: 16px;
   color: var(--color-gray);
   height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .prompt-btn,
 .upload-btn,
@@ -138,14 +147,15 @@ function loadDummy() {
   transition: background-color 0.3s ease;
   border: none;
   text-decoration: none;
-  color: white;
+  color: #fff;
+  &:hover {
+    background-color: #eee;
+    color: #000;
+  }
 }
 .prompt-btn {
   background-color: var(--color-primary);
   width: 100%;
-}
-.prompt-btn:hover {
-  background-color: #2c3e50;
 }
 
 .template-btn {
@@ -170,9 +180,10 @@ function loadDummy() {
 /* 뷰포트 너비가 650px 이하일 때 적용될 스타일 */
 @media (max-width: 650px) {
   .method-box {
-    max-width: unset;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
     flex-basis: 100%;
-    padding: var(--size-default);
     .button-group {
       flex-direction: column;
       align-items: center;

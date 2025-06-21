@@ -73,12 +73,11 @@ watch(
 <style scoped>
 .app-header {
   width: 100%;
-  padding: var(--size-default) 30px;
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-gray);
+  padding: 10px 20px;
+  border-bottom: 1px solid #eee;
   box-sizing: border-box;
   position: relative; /* 자식 absolute 요소의 기준점 */
-  z-index: 1002; /* dim 배경보다 위에 있도록 z-index 조정 */
+  z-index: 999; /* dim 배경보다 위에 있도록 z-index 조정 */
 }
 
 .header-content {
@@ -97,24 +96,29 @@ watch(
 .desktop-menu {
   display: flex;
   align-items: center;
-  gap: var(--size-default);
+  gap: 10px;
 }
 .desktop-menu nav {
   display: flex;
-  gap: var(--size-default);
+  align-items: baseline;
+  gap: 10px;
 }
 .desktop-menu a {
   text-decoration: none;
   font-weight: 500;
   font-size: var(--font-size-default);
   transition: color 0.3s;
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 .desktop-menu a:hover {
-  background-color: var(--color-primary-opacity);
+  background-color: #eee;
+  color: #000;
+  transition: background-color 0.3s, color 0.3s;
 }
 .desktop-menu nav a.router-link-exact-active {
   color: var(--color-primary);
-  border-bottom: 2px solid var(--color-primary);
+  background-color: #eee;
 }
 .project-title {
   color: var(--color-primary);
@@ -129,16 +133,16 @@ watch(
   top: 100%; /* 헤더 높이만큼 아래에 위치 */
   left: 0;
   width: 100%;
-  background-color: var(--color-background);
+  background-color: #fff;
   padding: var(--size-default);
   box-sizing: border-box;
   box-shadow: 0 4px 6px var(--shadow-color);
 
   display: flex;
   flex-direction: column;
-  gap: var(--size-default);
+  gap: 10px;
 
-  z-index: 1002; /* dim 배경 위에 오도록 z-index 추가 */
+  z-index: 999; /* dim 배경 위에 오도록 z-index 추가 */
 
   /* 애니메이션을 위한 초기 상태 */
   visibility: hidden;
@@ -152,12 +156,24 @@ watch(
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
-  background-color: var(--color-background);
+  background-color: #fff;
+  padding: 1rem;
+  a {
+    display: flex;
+    padding: 4px 8px;
+    min-height: 40px;
+    align-items: center;
+    border-radius: 8px;
+  }
+  a:hover {
+    background-color: #eee;
+    color: var(--color-primary);
+    transition: 0.3s;
+  }
 }
 
 .dropdown-menu a {
   text-decoration: none;
-  color: var(--color-white);
   font-weight: 500;
   font-size: var(--font-size-default);
   padding: var(--size-default) 0;
@@ -169,7 +185,7 @@ watch(
 .dropdown-menu nav {
   display: flex;
   flex-direction: column;
-  gap: var(--size-default);
+  gap: 10px;
 }
 
 /* --- 반응형 처리 --- */
