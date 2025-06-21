@@ -177,8 +177,7 @@ function loadDummy() {
 .dummy-data-link:hover {
   color: var(--primary-color);
 }
-/* 뷰포트 너비가 650px 이하일 때 적용될 스타일 */
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .method-box {
     min-width: 0;
     max-width: 100%;

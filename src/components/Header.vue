@@ -3,24 +3,25 @@
     <div v-if="isMenuOpen" class="menu-backdrop" @click="closeMenu"></div>
 
     <div class="header-content">
-      <router-link to="/" class="logo" @click="goHomeAndReset">
+      <div class="desktop-nav">
+        <nav class="main-nav">
+          <router-link to="/">Home</router-link>
+          <router-link to="/about">About</router-link>
+          <router-link to="/contact">Contact</router-link>
+        </nav>
+      </div>
+      <router-link to="/" class="logo-area" @click="goHomeAndReset">
         <img
           src="/assets/img/portfolio_web_logo_blue.svg"
           alt="logo"
           class="logo-image"
         />
-        <h1>Muno's design blog</h1>
+        <h1 class="desktop-title">Muno design blog</h1>
       </router-link>
-      <div class="desktop-menu">
-        <nav>
-          <router-link to="/">Home</router-link>
-          <router-link to="/about">About</router-link>
-          <router-link to="/contact">Contact</router-link>
-        </nav>
-        <span class="project-title">Toy project</span>
-        <router-link to="/dashboard" class="dashboard-link"
-          >사용자 데이터 분석 대시보드</router-link
-        >
+      <div>
+        <router-link to="/dashboard" class="dashboard-link">
+          사용자 데이터 분석 대시보드
+        </router-link>
       </div>
 
       <div class="hamburger-button" @click="toggleMenu">
@@ -35,9 +36,6 @@
         <router-link to="/about" @click="closeMenu">About</router-link>
         <router-link to="/contact" @click="closeMenu">Contact</router-link>
       </nav>
-      <router-link to="/dashboard" class="dashboard-link" @click="closeMenu">
-        사용자 데이터 분석 대시보드
-      </router-link>
     </div>
   </header>
 </template>
@@ -45,7 +43,6 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
-// 1단계에서 만든 viewState를 불러옵니다.
 import { viewState } from "../store/viewState";
 
 const isMenuOpen = ref(false);
@@ -59,15 +56,11 @@ const closeMenu = () => {
   isMenuOpen.value = false;
 };
 
-// 로고를 클릭했을 때 실행할 새로운 함수
 const goHomeAndReset = () => {
-  // 메뉴를 닫고,
   closeMenu();
-  // HomeView의 상태를 초기화하는 함수를 호출합니다.
   viewState.resetHomeView();
 };
 
-// 라우트(페이지)가 변경될 때마다 메뉴를 닫도록 수정
 watch(
   () => route.path,
   () => {
@@ -82,8 +75,8 @@ watch(
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
   box-sizing: border-box;
-  position: relative; /* 자식 absolute 요소의 기준점 */
-  z-index: 999; /* dim 배경보다 위에 있도록 z-index 조정 */
+  position: relative;
+  z-index: 999;
 }
 
 .header-content {
@@ -93,7 +86,7 @@ watch(
   width: 100%;
 }
 
-.logo {
+.logo-area {
   display: flex;
   align-items: center;
   font-size: 24px;
@@ -101,27 +94,31 @@ watch(
   position: relative;
   overflow: hidden;
   gap: 8px;
-  h1 {
-    color: #0033ff;
-  }
-  .logo-image {
-    display: block;
-    height: 24px;
-  }
 }
 
-/* --- 데스크탑 메뉴 --- */
-.desktop-menu {
+.logo-area .desktop-title {
+  display: none;
+}
+
+.logo-image {
+  display: block;
+  height: 24px;
+}
+
+/* --- 데스크탑 메뉴 (Home, About, Contact + Toy project) --- */
+.desktop-nav {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.desktop-menu nav {
+
+.desktop-nav .main-nav {
   display: flex;
   align-items: baseline;
   gap: 10px;
 }
-.desktop-menu a {
+
+.desktop-nav a {
   text-decoration: none;
   font-weight: 500;
   font-size: var(--font-size-default);
@@ -129,40 +126,50 @@ watch(
   padding: 8px 12px;
   border-radius: 8px;
 }
-.desktop-menu a:hover {
+
+.desktop-nav a:hover {
   background-color: #eee;
   color: #000;
   transition: background-color 0.3s, color 0.3s;
 }
-.desktop-menu nav a.router-link-exact-active {
+
+.desktop-nav .main-nav a.router-link-exact-active {
   color: var(--color-primary);
   background-color: #eee;
 }
-.project-title {
-  color: var(--color-primary);
+
+/* --- 대시보드 링크 (항상 헤더에 유지) --- */
+.dashboard-link {
+  color: #7f7fd5;
+  text-decoration: none;
+  font-weight: 500;
   font-size: var(--font-size-default);
+  transition: color 0.3s;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.dashboard-link:hover {
+  background: linear-gradient(90deg, #7f7fd5 0%, #86a8e7 50%, #91eae4 100%);
+  color: #fff;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* --- 모달 및 드롭다운 메뉴 스타일 --- */
 
 .dropdown-menu {
-  /* 헤더 바로 아래에 붙도록 position: absolute 사용 */
   position: absolute;
-  top: 100%; /* 헤더 높이만큼 아래에 위치 */
+  top: 100%;
   left: 0;
   width: 100%;
   background-color: #fff;
   padding: var(--size-default);
   box-sizing: border-box;
   box-shadow: 0 4px 6px var(--shadow-color);
-
   display: flex;
   flex-direction: column;
   gap: 10px;
-
-  z-index: 999; /* dim 배경 위에 오도록 z-index 추가 */
-
-  /* 애니메이션을 위한 초기 상태 */
+  z-index: 999;
   visibility: hidden;
   opacity: 0;
   transform: translateY(-10px);
@@ -170,40 +177,34 @@ watch(
 }
 
 .dropdown-menu.open {
-  /* 메뉴가 열렸을 때의 상태 */
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
   background-color: #fff;
   padding: 1rem;
-  a {
-    display: flex;
-    padding: 4px 8px;
-    min-height: 40px;
-    align-items: center;
-    border-radius: 8px;
-  }
-  a:hover {
-    background-color: #eee;
-    color: var(--color-primary);
-    transition: 0.3s;
-  }
 }
 
-.dropdown-menu a {
-  text-decoration: none;
-  font-weight: 500;
-  font-size: var(--font-size-default);
-  padding: var(--size-default) 0;
-}
-.dropdown-menu a:hover {
-  color: var(--color-primary);
-  transition: color 0.3s;
-}
 .dropdown-menu nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.dropdown-menu a {
+  display: flex;
+  padding: 4px 8px;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--font-size-default);
+}
+
+.dropdown-menu a:hover {
+  background-color: #eee;
+  color: var(--color-primary);
+  transition: 0.3s;
 }
 
 /* --- 반응형 처리 --- */
@@ -213,15 +214,23 @@ watch(
   font-size: 24px;
   cursor: pointer;
   user-select: none;
-  z-index: 1003; /* 버튼이 항상 위에 있도록 */
+  z-index: 1003;
 }
 
 @media (max-width: 768px) {
-  .desktop-menu {
-    display: none;
+  /* 모바일에서만 적용 */
+  .desktop-title,
+  .desktop-nav {
+    display: none; /* 데스크탑 전용 요소 숨기기 */
   }
+
   .hamburger-button {
-    display: block;
+    display: block; /* 햄버거 버튼 표시 */
+  }
+
+  .header-content {
+    /* 모바일에서는 로고, 대시보드 링크, 햄버거 버튼만 flex로 정렬 */
+    justify-content: space-between;
   }
 }
 </style>
