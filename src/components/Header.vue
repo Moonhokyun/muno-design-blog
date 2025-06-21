@@ -3,8 +3,14 @@
     <div v-if="isMenuOpen" class="menu-backdrop" @click="closeMenu"></div>
 
     <div class="header-content">
-      <router-link to="/" class="logo" @click="goHomeAndReset">🚀</router-link>
-
+      <router-link to="/" class="logo" @click="goHomeAndReset">
+        <img
+          src="/assets/img/portfolio_web_logo_blue.svg"
+          alt="logo"
+          class="logo-image"
+        />
+        <h1>Muno's design blog</h1>
+      </router-link>
       <div class="desktop-menu">
         <nav>
           <router-link to="/">Home</router-link>
@@ -88,8 +94,20 @@ watch(
 }
 
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 24px;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  gap: 8px;
+  h1 {
+    color: #0033ff;
+  }
+  .logo-image {
+    display: block;
+    height: 24px;
+  }
 }
 
 /* --- 데스크탑 메뉴 --- */

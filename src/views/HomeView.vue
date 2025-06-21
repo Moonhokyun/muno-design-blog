@@ -19,9 +19,6 @@
       <div v-if="selectedCard" class="blog-detail-view">
         <div class="blog-header">
           <button @click="goBack" class="back-button">← 뒤로 가기</button>
-          <!-- <div class="thumbnail-container">
-            <img :src="selectedCard.image" alt="Thumbnail" />
-          </div> -->
           <div class="summary-container">
             <h2>{{ selectedCard.title }}</h2>
             <div class="summary-info">
@@ -89,19 +86,11 @@
           @click="selectCard(card)"
         >
           <div class="img-container">
-            <img :src="card.image" alt="Image" />
+            <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
           </div>
           <div class="card-description">
             <h3 class="card-description-title">{{ card.title }}</h3>
             <p class="card-description-detail">{{ card.summary }}</p>
-            <!-- <div class="card-footer">
-              <div class="tags-container">
-                <span v-for="tag in card.tags" :key="tag" class="tag">{{
-                  tag
-                }}</span>
-              </div>
-              <p class="creation-date">{{ card.creationDate }}</p>
-            </div> -->
           </div>
         </section>
       </div>
@@ -110,8 +99,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { viewState } from "../store/viewState";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue"; // watch 추가
+import { viewState } from "../store/viewState"; //
+import { useRoute } from "vue-router"; // useRoute 추가
+
+const route = useRoute(); // useRoute 인스턴스 생성
 
 // --- 데이터 ---
 const selectedCard = ref(null);
@@ -244,6 +236,9 @@ onMounted(() => {
   // viewState의 resetHomeView 함수를 이 컴포넌트의 goBack 함수로 지정합니다.
   // 이제 다른 컴포넌트에서 viewState.resetHomeView()를 호출하면 goBack()이 실행됩니다.
   viewState.resetHomeView = goBack;
+
+  // 페이지 로드 시, 라우터 메타 정보를 사용하여 초기 SEO 설정
+  updateMetaTags(route.meta.title, route.meta.description);
 });
 
 // HomeView 컴포넌트가 화면에서 사라질 때 실행됩니다.
@@ -251,6 +246,30 @@ onUnmounted(() => {
   // 다른 페이지에서는 이 기능이 필요 없으므로, 기본 함수로 되돌려 놓습니다.
   viewState.resetHomeView = () => {};
 });
+
+// selectedCard가 변경될 때마다 페이지 타이틀 및 메타 설명 업데이트
+watch(
+  selectedCard,
+  (newCard) => {
+    if (newCard) {
+      // 개별 게시물 상세 보기 시
+      updateMetaTags(`${newCard.title} | Muno's design blog`, newCard.summary);
+    } else {
+      // 상세 페이지가 아닐 때 (전체 목록 또는 태그 필터링 목록)
+      // router/index.js에 정의된 HomeView의 기본 메타 정보를 사용
+      updateMetaTags(route.meta.title, route.meta.description);
+    }
+  },
+  { immediate: true }
+); // 컴포넌트 마운트 시 초기값으로도 실행
+
+// 메타 태그를 업데이트하는 헬퍼 함수
+function updateMetaTags(title, description) {
+  document.title = title || "기본 타이틀"; //
+  document
+    .querySelector('meta[name="description"]')
+    .setAttribute("content", description || "기본 설명"); //
+}
 </script>
 
 <style scoped>
