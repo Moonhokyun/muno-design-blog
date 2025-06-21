@@ -100,6 +100,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .chart-wrapper {
+  width: 100%;
   position: relative;
   flex-grow: 1; /* 이 속성이 핵심입니다. 남는 공간을 모두 차지하게 합니다. */
   min-height: 0; /* flex-grow가 제대로 작동하기 위해 필요할 수 있습니다. */

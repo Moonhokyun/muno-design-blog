@@ -80,7 +80,9 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   z-index: 1000;
 }
 .modal-content {
-  background-color: var(--color-black);
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
   padding: var(--size-default);
   border-radius: var(--border-radius);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -88,6 +90,11 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   max-width: 600px;
   position: relative;
   text-align: left;
+  padding: 20px;
+  gap: 20px;
+  p {
+    margin: 0;
+  }
 }
 .close-btn {
   position: absolute;
@@ -100,8 +107,8 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   color: #888;
 }
 .prompt-box {
-  background-color: var(--color-white-opacity);
-  padding: var(--size-default);
+  background-color: #eee;
+  padding: 1rem;
   border-radius: 8px;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -109,6 +116,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   font-size: 14px;
   max-height: 200px;
   overflow-y: auto;
+  margin: 0;
 }
 .prompt-box::-webkit-scrollbar {
   width: 14px;
@@ -123,7 +131,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 }
 .copy-btn {
   background-color: var(--color-primary);
-  color: white;
+  color: #fff;
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -136,6 +144,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
   margin-left: auto; /* 오른쪽 정렬 */
 }
 .copy-btn:hover {
-  background-color: var(--color-primary-opacity);
+  background-color: #eee;
+  color: #000;
 }
 </style>

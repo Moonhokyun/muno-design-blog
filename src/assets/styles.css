@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
 
 :root {
-  --color-primary: #009eee;
+  --color-primary: #181818;
   --color-primary-opacity: #009fee3e;
   --color-secondary: #00547f;
   --color-black: #181818;
@@ -28,7 +28,7 @@
   input,
   textarea,
   button {
-    color: var(--color-white);
+    color: #000;
   }
   --color-light-gray: #e0e0e0; /* 기존에 있던 색상 유지 */
   --color-background: #121212; /* 기존에 있던 색상 유지 */
@@ -36,18 +36,14 @@
 
   /* --- 2. Sizing Units --- */
   --size-default: 0;
-
-  /* --- 3. Font Styles --- */
-  --font-size-default: 12px;
+  --font-size-default: 14px;
   --line-height-default: 1.5;
-
-  /* --- 기존 값들 --- */
-  --border-radius: 12px;
+  --border-radius: 8px;
 }
 
 body {
   font-family: "Noto Sans KR", sans-serif;
-  background-color: var(--color-background);
+  background-color: #fff;
   color: var(--color-black);
   margin: 0;
   display: flex;
@@ -59,7 +55,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-default);
+  gap: 10px;
 }
 
 h1 {
@@ -82,7 +78,7 @@ h3 {
 [class*="row"],
 [class*="Row"] {
   display: flex;
-  gap: var(--size-default);
+  gap: 10px;
 }
 /* --- Common Container Style --- */
 .dashboard-container {
@@ -95,8 +91,11 @@ h3 {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: var(--size-default);
+  gap: 10px;
   background-color: var(--color-white-opacity);
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #eee;
 }
 
 /* --- File Input Container --- */
@@ -107,7 +106,7 @@ h3 {
 
 .upload-btn {
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: #000;
   padding: var(--size-default) 24px; /* 변수 사용 */
   border: none;
   border-radius: var(--size-default); /* 변수 사용 */
@@ -117,7 +116,8 @@ h3 {
   transition: background-color 0.3s ease;
 }
 .upload-btn:hover {
-  background-color: var(--color-primary-opacity);
+  background-color: #eee;
+  color: #000;
 }
 .upload-btn input[type="file"] {
   display: none;
@@ -134,7 +134,7 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--size-default);
+  gap: 16px;
 }
 
 /* --- Chart Container --- */
@@ -146,6 +146,7 @@ h3 {
 .table-scroll-wrapper {
   overflow-y: auto;
   border-color: var(--color-gray);
+  width: 100%;
 }
 .table-scroll-wrapper::-webkit-scrollbar {
   width: 14px;
@@ -169,12 +170,13 @@ th,
 td {
   padding: var(--size-default) var(--size-default); /* 변수 사용 */
   text-align: left;
-  border-bottom: 1px solid var(--color-gray);
+  border-bottom: 1px solid #eee;
+  padding: 10px;
 }
 th {
   background-color: var(--color-primary);
   font-weight: 500;
-  color: var(--color-white);
+  color: #fff;
   position: sticky;
   top: 0;
 }
@@ -193,10 +195,10 @@ tbody tr {
   border-radius: 10px;
 }
 tbody tr:hover {
-  background-color: var(--color-primary-opacity);
+  background-color: #eee;
 }
 tbody tr.selected {
-  background-color: var(--color-primary-opacity);
+  background-color: #eee;
 }
 
 /* --- User Detail Container --- */
@@ -206,43 +208,37 @@ tbody tr.selected {
 
 .user-detail-scroll-wrapper {
   overflow-y: auto;
+  width: 100%;
 }
-.user-detail-content .detail-item {
-  color: var(--color-white);
-  margin-bottom: var(--size-default); /* 변수 사용 */
-  font-size: var(--font-size-default); /* 변수 사용 */
-}
-.user-detail-content .detail-item strong {
-  color: var(--color-gray);
-  display: inline-block;
-  width: 100px;
-}
-.user-detail-content .introduction {
-  margin-top: var(--size-default); /* 변수 사용 */
-  padding: var(--size-default); /* 변수 사용 */
-  background-color: var(--color-secondary);
-  border-radius: var(--size-default); /* 변수 사용 */
-  white-space: pre-wrap;
-  line-height: var(--line-height-default); /* 변수 사용 */
+.user-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  .detail-item {
+    color: #000;
+    margin-bottom: var(--size-default); /* 변수 사용 */
+    font-size: var(--font-size-default); /* 변수 사용 */
+  }
+  .detail-item strong {
+    color: var(--color-gray);
+    display: inline-block;
+    width: 100px;
+  }
+  .introduction {
+    margin-top: var(--size-default); /* 변수 사용 */
+    padding: var(--size-default); /* 변수 사용 */
+    background-color: #eee;
+    border-radius: var(--size-default); /* 변수 사용 */
+    white-space: pre-wrap;
+    line-height: var(--line-height-default); /* 변수 사용 */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: var(--border-radius);
+  }
 }
 
 /* --- Export Container --- */
 .export-container {
   max-height: none;
   text-align: center;
-}
-.export-btn {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  padding: var(--size-default) 24px; /* 변수 사용 */
-  border: none;
-  border-radius: var(--size-default); /* 변수 사용 */
-  cursor: pointer;
-  font-size: var(--font-size-default); /* 변수 사용 */
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  margin-top: var(--size-default); /* 변수 사용 */
-}
-.export-btn:hover {
-  background-color: var(--color-primary-opacity);
 }
