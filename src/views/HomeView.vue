@@ -16,7 +16,13 @@
     </aside>
 
     <main class="main-content">
-      <div v-if="selectedCard" class="blog-detail-view">
+      <div v-if="loading" class="loading-message">
+        블로그 게시물을 불러오는 중입니다...
+      </div>
+      <div v-else-if="error" class="error-message">
+        데이터를 불러오는데 실패했습니다: {{ error }}
+      </div>
+      <div v-else-if="selectedCard" class="blog-detail-view">
         <div class="blog-header">
           <button @click="goBack" class="back-button">← 뒤로 가기</button>
           <div class="summary-container">
@@ -35,7 +41,7 @@
         </div>
         <hr />
         <div class="blog-content">
-          <p class="content-style">{{ selectedCard.content }}</p>
+          <p class="content-style" v-html="selectedCard.content"></p>
         </div>
 
         <div class="comment-section">
@@ -99,88 +105,58 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue"; // watch 추가
-import { viewState } from "../store/viewState"; //
-import { useRoute } from "vue-router"; // useRoute 추가
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { viewState } from "../store/viewState";
+import { useRoute } from "vue-router";
 
-const route = useRoute(); // useRoute 인스턴스 생성
+const route = useRoute();
 
 // --- 데이터 ---
+const cards = ref([]); // 하드코딩된 데이터를 빈 배열로 변경
 const selectedCard = ref(null);
 const selectedTag = ref("전체");
+const loading = ref(true); // 로딩 상태 추가
+const error = ref(null); // 에러 상태 추가
 
-// 예시 데이터 (각 항목에 'creationDate' 속성 추가)
-const cards = ref([
-  {
-    id: 1,
-    title: "Blog Title",
-    summary: "Vue 3의 새로운 기능과 Composition API에 대해 알아봅니다.",
-    content:
-      "Vue 3는 더 빠르고, 작고, 유지보수하기 쉬워졌습니다. 특히 Composition API는 코드 재사용성과 가독성을 크게 향상시킵니다...",
-    image: "https://vuejs.org/images/logo.png",
-    tags: ["UI/UX", "브랜딩"],
-    creationDate: "2024.05.01",
-  },
-  {
-    id: 2,
-    title: "커뮤니티를 만들며 얻은 인사이트",
-    summary: "활발한 온라인 커뮤니티를 구축하고 운영하는 노하우를 공유합니다.",
-    content:
-      "좋은 커뮤니티는 저절로 만들어지지 않습니다. 초기 멤버 모집부터 콘텐츠 전략, 갈등 관리까지 실제 경험을 바탕으로 한 팁들을 알려드립니다.",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop",
-    tags: ["커뮤니티 빌드 및 활동"],
-    creationDate: "2024.05.10",
-  },
-  {
-    id: 3,
-    title: "도쿄의 미니멀리즘 디자인",
-    summary: "일본 디자인 특유의 미니멀리즘과 여백의 미에 대해 탐구합니다.",
-    content:
-      "도쿄의 건축, 제품, 그래픽 디자인에서 공통적으로 발견되는 미니멀리즘 철학은 무엇일까요? 'Design in Japan' 시리즈의 첫 번째 글입니다.",
-    image:
-      "https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop",
-    tags: ["Design in japan", "UI/UX"],
-    creationDate: "2024.05.15",
-  },
-  {
-    id: 4,
-    title: "사용자 경험을 개선하는 5가지 방법",
-    summary:
-      "데이터를 기반으로 사용자의 만족도를 높이는 UI/UX 개선안을 제시합니다.",
-    content:
-      "사용자 피드백과 데이터를 분석하여 웹사이트의 이탈률을 낮추고 전환율을 높인 5가지 실제 사례를 소개합니다.",
-    image:
-      "https://images.unsplash.com/photo-1559028006-44a36f1153d5?q=80&w=1932&auto=format&fit=crop",
-    tags: ["UI/UX"],
-    creationDate: "2024.05.20",
-  },
-  {
-    id: 5,
-    title: "성공적인 브랜딩을 위한 스토리텔링",
-    summary: "고객의 마음에 오래 남는 브랜드 스토리를 만드는 법을 알아봅니다.",
-    content:
-      "단순히 제품을 파는 것을 넘어, 브랜드의 철학과 가치를 전달하는 스토리텔링 전략은 강력한 팬덤을 형성하는 기초가 됩니다.",
-    image:
-      "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=2070&auto=format&fit=crop",
-    tags: ["브랜딩"],
-    creationDate: "2024.05.25",
-  },
-  {
-    id: 6,
-    title: "오프라인 모임 활성화 전략",
-    summary:
-      "온라인 커뮤니티 멤버들을 오프라인으로 이끌어내는 구체적인 방법들.",
-    content:
-      "정기적인 오프라인 모임은 커뮤니티의 결속력을 다지는 최고의 방법입니다. 성공적인 모임을 기획하고 실행하기 위한 체크리스트를 공유합니다.",
-    image:
-      "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop",
-    tags: ["커뮤니티 빌드 및 활동"],
-    creationDate: "2024.06.01",
-  },
-]);
+// 백엔드 API의 기본 URL
+const API_BASE_URL = "http://localhost:3000"; // 백엔드 서버 주소
 
-// --- Computed 속성 ---
+// 블로그 게시물 목록을 가져오는 함수
+const fetchPosts = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/posts`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    cards.value = data; // Notion에서 가져온 데이터로 cards 업데이트
+  } catch (err) {
+    console.error("Failed to fetch posts:", err);
+    error.value = "게시물을 불러오지 못했습니다. 서버를 확인해주세요.";
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 특정 블로그 게시물의 상세 내용을 가져오는 함수
+const fetchPostContent = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/posts/${id}/content`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.content; // 백엔드에서 반환하는 content 필드
+  } catch (err) {
+    console.error(`Failed to fetch content for post ${id}:`, err);
+    // 오류 발생 시 임시 메시지 또는 요약을 반환
+    return "게시물 내용을 불러올 수 없습니다.";
+  }
+};
+
+// --- Computed 속성 (기존과 동일) ---
 const allTags = computed(() => {
   const tags = new Set();
   cards.value.forEach((card) => {
@@ -217,63 +193,63 @@ const nextCard = computed(() => {
 // --- 메소드 ---
 const selectTag = (tag) => {
   selectedTag.value = tag;
-  selectedCard.value = null;
+  selectedCard.value = null; // 태그 변경 시 상세 보기 초기화
 };
 
-const selectCard = (card) => {
-  selectedCard.value = card;
+// selectCard 함수를 수정하여 상세 내용도 가져오도록 변경
+const selectCard = async (card) => {
+  // 로딩 상태를 true로 설정하여 사용자에게 데이터를 가져오는 중임을 알림
+  selectedCard.value = { ...card, content: "내용을 불러오는 중..." }; // 임시 로딩 메시지
+  const content = await fetchPostContent(card.id);
+  selectedCard.value = { ...card, content: content }; // 실제 내용으로 업데이트
 };
 
-// goBack 함수를 HomeView의 상태를 초기화하는 함수로 사용합니다.
 const goBack = () => {
   selectedCard.value = null;
-  selectedTag.value = "전체"; // 태그 필터도 초기화합니다.
+  selectedTag.value = "전체";
 };
 
 // --- 라이프사이클 훅 ---
-// HomeView 컴포넌트가 화면에 나타날 때 실행됩니다.
 onMounted(() => {
-  // viewState의 resetHomeView 함수를 이 컴포넌트의 goBack 함수로 지정합니다.
-  // 이제 다른 컴포넌트에서 viewState.resetHomeView()를 호출하면 goBack()이 실행됩니다.
+  fetchPosts(); // 컴포넌트 마운트 시 블로그 게시물 데이터 로드
   viewState.resetHomeView = goBack;
-
-  // 페이지 로드 시, 라우터 메타 정보를 사용하여 초기 SEO 설정
   updateMetaTags(route.meta.title, route.meta.description);
 });
 
-// HomeView 컴포넌트가 화면에서 사라질 때 실행됩니다.
 onUnmounted(() => {
-  // 다른 페이지에서는 이 기능이 필요 없으므로, 기본 함수로 되돌려 놓습니다.
   viewState.resetHomeView = () => {};
 });
 
-// selectedCard가 변경될 때마다 페이지 타이틀 및 메타 설명 업데이트
 watch(
   selectedCard,
   (newCard) => {
     if (newCard) {
-      // 개별 게시물 상세 보기 시
       updateMetaTags(`${newCard.title} | Muno's design blog`, newCard.summary);
     } else {
-      // 상세 페이지가 아닐 때 (전체 목록 또는 태그 필터링 목록)
-      // router/index.js에 정의된 HomeView의 기본 메타 정보를 사용
       updateMetaTags(route.meta.title, route.meta.description);
     }
   },
   { immediate: true }
-); // 컴포넌트 마운트 시 초기값으로도 실행
+);
 
-// 메타 태그를 업데이트하는 헬퍼 함수
 function updateMetaTags(title, description) {
-  document.title = title || "기본 타이틀"; //
+  document.title = title || "기본 타이틀";
   document
     .querySelector('meta[name="description"]')
-    .setAttribute("content", description || "기본 설명"); //
+    .setAttribute("content", description || "기본 설명");
 }
 </script>
 
 <style scoped>
 /* 기존 스타일은 유지하고 아래 스타일만 추가 또는 수정합니다. */
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: var(--color-gray);
+}
 
 /* --- 카드 설명 & 푸터 스타일 --- */
 .card-description {
