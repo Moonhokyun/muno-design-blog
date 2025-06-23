@@ -119,7 +119,7 @@ const loading = ref(true); // 로딩 상태 추가
 const error = ref(null); // 에러 상태 추가
 
 // 백엔드 API의 기본 URL
-const API_BASE_URL = "http://localhost:3000"; // 백엔드 서버 주소
+const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app"; // <-- Vercel에서 확인한 도메인으로 변경
 
 // 블로그 게시물 목록을 가져오는 함수
 const fetchPosts = async () => {
