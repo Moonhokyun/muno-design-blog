@@ -40,26 +40,28 @@
           </div>
         </div>
         <hr />
-        <div class="blog-content">
-          <div class="content-style" v-html="selectedCard.content"></div>
-        </div>
+        <div class="blog-content" v-html="selectedCard.content"></div>
 
-        <div class="comment-section">
+        <div class="button-group">
           <a
             href="https://forms.gle/N83gwgwpiFEYMYEJ8"
             target="_blank"
-            class="comment-button"
+            class="action-button"
           >
             글에 대한 피드백 남기기 💬
           </a>
+          <button @click="sharePost" class="action-button share-button">
+            <span v-if="copyButtonState === 'copied'">copied</span>
+            <span v-else class="mdi mdi-share-variant-outline"></span>
+          </button>
         </div>
 
         <hr />
         <div class="blog-navigation">
-          <button :disabled="!previousCard" @click="selectCard(previousCard)">
+          <button :disabled="!previousCard" @click="navigateToCard(previousCard)">
             &lt; 이전 글
           </button>
-          <button :disabled="!nextCard" @click="selectCard(nextCard)">
+          <button :disabled="!nextCard" @click="navigateToCard(nextCard)">
             다음 글 &gt;
           </button>
         </div>
@@ -71,7 +73,7 @@
               v-for="card in filteredCards"
               :key="card.id"
               class="card-container-small"
-              @click="selectCard(card)"
+              @click="navigateToCard(card)"
             >
               <div class="img-container-small">
                 <img :src="card.image" alt="Image" />
@@ -89,7 +91,7 @@
           v-for="card in filteredCards"
           :key="card.id"
           class="card-container"
-          @click="selectCard(card)"
+          @click="navigateToCard(card)"
         >
           <div class="img-container">
             <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
@@ -107,7 +109,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { viewState } from "../store/viewState";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
 
 // =================================================================
@@ -117,41 +119,34 @@ const USE_LOCAL_DATA = false; // true: 로컬 데이터 사용, false: 서버 AP
 // =================================================================
 
 const route = useRoute();
+const router = useRouter();
 const cards = ref([]);
 const selectedCard = ref(null);
 const selectedTag = ref("전체");
 const loading = ref(true);
 const error = ref(null);
+const copyButtonState = ref("default");
 
-// --- 로컬 데이터 정의 ---
 const localPosts = [
   {
     id: '1',
-    title: '2025년 소모임 어플 추천 TOP 3',
+    title: '2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.',
     summary: '안녕하세요! 김포에서 상위권 자기계발 모임을 운영중이에요. 제가 직접 써보고 분석한 소모임 앱 선택 기준, 간단하게 공유해 드릴게요.',
     image: '/assets/img/open-graph.png',
     tags: ['커뮤니티'],
     creationDate: '2025-06-22',
     content: `# 2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.
-
 ## 소모임 어플, 어떤 기준으로 고르고 계신가요?
-
-저는 현재 제가 살고 있는 동네에서 당근 모임을 통한 커뮤니티를 운영 중입니다.
-자기계발 분야에서는 1위를 해본 적도 있고, 열혈 유저 분들도 꽤 있는 모임을 운영 중이에요.
-이 외에도 다양한 서비스의 모임에 열혈 유저로도 활동해보았는데요.
-제가 모임을 운영하기 위해 어떤 서비스를 선택했고, 그 기준은 어땠는지 공유해 볼게요!
-
-### **어떤 앱을 선택해야 할까? 내 모임에 딱 맞는 플랫폼 최종 선택 가이드**
-
+![대체 텍스트: 당근 동네생활 앱 캡쳐](/assets/img/open-graph.png)
+### **김포 1위 모임장이 직접 써보고 분석한 소모임 어플 TOP 3**
 | 플랫폼 | 장점 👍 | 단점 👎 | 추천 모임 유형 |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | 카카오톡 오픈채팅 | • 높은 접근성 | • '빌런' 유입 가능성 | • 전국 단위 서비스 |
 | 문토 (Munto) | • 전문성 기반 운영 | • 제한된 사용자 풀 | • 수익화 모임 |
 | 당근 (Karrot) | • 지역 기반 | • 한정적인 유저 풀 | • 동네 친목 모임 |`
   }
 ];
 
-// --- API 및 데이터 로딩 로직 ---
 const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app";
 
 const fetchPosts = async () => {
@@ -159,25 +154,17 @@ const fetchPosts = async () => {
   error.value = null;
 
   if (USE_LOCAL_DATA) {
-    // 로컬 데이터 사용
-    console.log("로컬 데이터를 불러옵니다.");
     setTimeout(() => {
-      cards.value = localPosts.map(post => {
-        const { content, ...cardData } = post;
-        return cardData;
-      });
+      cards.value = localPosts.map(post => ({ ...post, content: undefined }));
       loading.value = false;
     }, 300);
   } else {
-    // 서버 API 사용
-    console.log("서버에서 데이터를 불러옵니다.");
     try {
       const response = await fetch(`${API_BASE_URL}/api/posts`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       cards.value = await response.json();
     } catch (err) {
-      console.error("Failed to fetch posts:", err);
-      error.value = "게시물을 불러오지 못했습니다. 서버를 확인해주세요.";
+      error.value = "게시물을 불러오지 못했습니다.";
     } finally {
       loading.value = false;
     }
@@ -195,14 +182,31 @@ const fetchPostContent = async (id) => {
       const data = await response.json();
       return data.content;
     } catch (err) {
-      console.error(`Failed to fetch content for post ${id}:`, err);
       return "게시물 내용을 불러올 수 없습니다.";
     }
   }
 };
 
+const navigateToCard = (card) => {
+    if (!card) return;
+    router.push({ query: { post: card.id } });
+};
 
-// --- 아래부터는 기존 로직과 동일합니다 ---
+const goBack = () => {
+  router.push({ query: {} });
+};
+
+const sharePost = async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    copyButtonState.value = "copied";
+    setTimeout(() => {
+      copyButtonState.value = "default";
+    }, 2000);
+  } catch (err) {
+    alert("링크 복사에 실패했습니다.");
+  }
+};
 
 const allTags = computed(() => {
   const tags = new Set();
@@ -218,18 +222,6 @@ const filteredCards = computed(() => {
   return cards.value.filter((card) => card.tags.includes(selectedTag.value));
 });
 
-const selectCard = async (card) => {
-  selectedCard.value = { ...card, content: "내용을 불러오는 중..." };
-  const markdownContent = await fetchPostContent(card.id);
-  const htmlContent = marked.parse(markdownContent);
-  selectedCard.value = { ...card, content: htmlContent };
-};
-
-const goBack = () => {
-  selectedCard.value = null;
-  selectedTag.value = "전체";
-};
-
 const previousCard = computed(() => {
   if (!selectedCard.value) return null;
   const currentIndex = filteredCards.value.findIndex( c => c.id === selectedCard.value.id );
@@ -244,50 +236,105 @@ const nextCard = computed(() => {
 
 const selectTag = (tag) => {
   selectedTag.value = tag;
-  selectedCard.value = null;
+  goBack();
 };
+
+watch(() => route.query.post, async (newId) => {
+    if (loading.value) {
+        await new Promise(resolve => watch(loading, (val) => !val && resolve()));
+    }
+
+    if (newId) {
+        const cardToSelect = cards.value.find(c => c.id === newId);
+        if (cardToSelect) {
+            selectedCard.value = { ...cardToSelect, content: "내용을 불러오는 중..." };
+            const markdownContent = await fetchPostContent(newId);
+            const htmlContent = marked.parse(markdownContent);
+            selectedCard.value = { ...cardToSelect, content: htmlContent };
+        } else {
+            error.value = "해당 게시물을 찾을 수 없습니다.";
+            selectedCard.value = null;
+        }
+    } else {
+        selectedCard.value = null;
+    }
+}, { immediate: true });
 
 onMounted(() => {
   fetchPosts();
   viewState.resetHomeView = goBack;
-  updateMetaTags(route.meta.title, route.meta.description);
 });
 
 onUnmounted(() => {
   viewState.resetHomeView = () => {};
 });
-
-watch(
-  selectedCard,
-  (newCard) => {
-    if (newCard) {
-      updateMetaTags(`${newCard.title} | Muno's design blog`, newCard.summary);
-    } else {
-      updateMetaTags(route.meta.title, route.meta.description);
-    }
-  },
-  { immediate: true }
-);
-
-function updateMetaTags(title, description) {
-  document.title = title || "기본 타이틀";
-  document
-    .querySelector('meta[name="description"]')
-    .setAttribute("content", description || "기본 설명");
-}
 </script>
 
 <style scoped>
-/* CSS는 이전과 동일합니다. */
+/* [수정] 스크롤 처리를 부모에게 위임 */
+.blog-content {
+  line-height: 1.8;
+  padding: 1rem;
+  overflow-x: auto; /* 내용이 넘칠 때만 가로 스크롤 생성 */
+}
+.blog-content :deep(h1),
+.blog-content :deep(h2),
+.blog-content :deep(h3) {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+}
+.blog-content :deep(h2) {
+  font-size: 20px;
+}
+.blog-content :deep(img) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+/* [수정] 테이블 스타일 변경 */
+.blog-content :deep(table) {
+  width: 100%;
+  border-collapse: separate; /* border-radius를 셀에 적용하기 위해 'separate'로 설정 */
+  border-spacing: 0;
+  margin: 1rem 0;
+  min-width: 400px; /* 테이블의 최소 너비를 지정해 가독성 확보 */
+}
+.blog-content :deep(th),
+.blog-content :deep(td) {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* 셀 사이의 border가 중복되지 않도록 처리 */
+.blog-content :deep(th:not(:first-child)),
+.blog-content :deep(td:not(:first-child)) {
+  border-left: none;
+}
+.blog-content :deep(tbody td) {
+  border-top: none;
+}
+
+/* 테이블의 네 모서리에 border-radius 적용 */
+.blog-content :deep(thead tr:first-child > th:first-child) { border-top-left-radius: 6px; }
+.blog-content :deep(thead tr:first-child > th:first-child) { border-bottom-left-radius: 6px; }
+.blog-content :deep(thead tr:first-child > th:last-child) { border-top-right-radius: 6px; }
+.blog-content :deep(thead tr:first-child > th:last-child) { border-bottom-right-radius: 6px; }
+.blog-content :deep(tbody tr:last-child > td:first-child) { border-bottom-left-radius: 6px; }
+.blog-content :deep(tbody tr:last-child > td:last-child) { border-bottom-right-radius: 6px; }
+
 .loading-message,
 .error-message {
   text-align: center;
   padding: 20px;
-  font-size: 16px;
+  font-size: 1.2rem;
   color: var(--color-gray);
 }
 .card-description {
-  justify-content: space-between; /* 내부 요소를 위아래로 분산 */
+  justify-content: space-between;
   height: 100%;
 }
 .card-description-title {
@@ -296,46 +343,55 @@ function updateMetaTags(title, description) {
 .card-description-detail {
   font-size: 12px;
 }
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
 .creation-date {
   font-size: 12px;
   color: var(--color-gray);
   margin: 0;
-  white-space: nowrap; /* 날짜가 줄바꿈되지 않도록 */
+  white-space: nowrap;
 }
-.comment-section {
-  text-align: center;
-  padding: 20px;
+.button-group {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
+  padding: 20px;
 }
-.comment-button {
-  display: inline-block;
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--color-primary);
   color: #fff;
-  padding: 4px 8px;
+  padding: 8px 16px;
   text-decoration: none;
   font-size: var(--font-size-default);
   font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
-  min-height: 40px;
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
+  height: 40px;
   border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
-.comment-button:hover {
+.action-button:hover {
   background-color: #eee;
   color: #000;
-  transition: background-color 0.3s, color 0.3s;
 }
+.share-button {
+    background-color: transparent;
+    border: 1px solid #d4d4d4;
+    color: #d4d4d4;
+    min-width: 80px;
+}
+.share-button:hover {
+    background-color: #eee;
+    color: #000;
+}
+.share-button .mdi {
+    font-size: 20px;
+}
+
 .sidebar li.active a {
   background-color: #eee;
   color: #000;
@@ -349,7 +405,6 @@ function updateMetaTags(title, description) {
 .tag {
   background-color: #eee;
   border-radius: 12px;
-  color: #eee;
   font-size: 10px;
   color: #000;
   padding: 2px 8px;
@@ -357,8 +412,7 @@ function updateMetaTags(title, description) {
 .home-container {
   display: flex;
   width: 100%;
-  height: 100%; /* 뷰포트 높이에서 헤더 높이를 뺀 값 */
-  /* main-content 스크롤을 웹 기본 창으로 옮기기 위해 overflow-y를 제거 */
+  height: 100%;
 }
 .sidebar {
   width: 200px;
@@ -377,7 +431,7 @@ function updateMetaTags(title, description) {
   list-style: none;
   padding: 0;
   margin: 0;
-  flex-direction: column; /* 변경된 부분 */
+  flex-direction: column;
 }
 .sidebar li a {
   color: #000;
@@ -392,17 +446,15 @@ function updateMetaTags(title, description) {
 .main-content {
   flex-grow: 1;
   padding: var(--size-default);
-  height: auto; /* 기본적으로 auto로 설정 */
+  height: auto;
   box-sizing: border-box;
 }
 .contents-grid {
   display: grid;
   column-gap: 1rem;
-  gap: 1rem; /* column-gap과 동일하게 설정 */
+  gap: 1rem;
   grid-template-columns: repeat(12, minmax(0.3125rem, 1fr));
   margin: 1rem;
-
-  /* height: 100vh; 이 속성을 제거하여 유동적인 높이를 허용합니다. */
 }
 .card-container {
   display: flex;
@@ -414,8 +466,8 @@ function updateMetaTags(title, description) {
   border: 1px solid #eee;
   border-radius: var(--border-radius);
   width: 100%;
-  height: auto; /* padding-bottom 기반으로 높이 설정 예정이므로 auto로 둠 */
-  min-height: 200px; /* 최소 높이 설정 (720px 이하에서 unset) */
+  height: auto;
+  min-height: 200px;
 }
 .card-container:hover {
   transform: translateY(-5px);
@@ -423,14 +475,14 @@ function updateMetaTags(title, description) {
 }
 .img-container {
   width: 100%;
-  height: 0; /* padding-bottom으로 높이 지정 */
-  padding-bottom: 40%; /* 16:9 비율 유지 (예시) */
+  height: 0;
+  padding-bottom: 40%;
   background-color: #eee;
-  position: relative; /* img 태그 absolute 포지셔닝을 위해 */
+  position: relative;
   overflow: hidden;
 }
 .img-container img {
-  position: absolute; /* 부모 컨테이너 내에서 위치 지정 */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -439,7 +491,6 @@ function updateMetaTags(title, description) {
 }
 .card-description {
   width: 100%;
-  /* height: 50%; 제거 - content에 따라 유동적으로 */
   padding: 12px;
   gap: 10px;
   box-sizing: border-box;
@@ -458,6 +509,9 @@ function updateMetaTags(title, description) {
 }
 .blog-detail-view {
   color: #000;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
 }
 .related-content {
   display: flex;
@@ -487,16 +541,6 @@ function updateMetaTags(title, description) {
   transition: background-color 0.3s, color 0.3s;
   border-radius: 8px;
 }
-.thumbnail-container {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
-  width: 100%;
-  max-width: 200px;
-}
-.thumbnail-container img {
-  width: 100%;
-  border-radius: var(--border-radius);
-}
 .summary-container {
   display: flex;
   width: 100%;
@@ -513,40 +557,7 @@ function updateMetaTags(title, description) {
   color: var(--color-primary);
   font-size: 2rem;
 }
-.blog-content {
-  line-height: 1.8;
-  padding: 1rem;
-}
 
-/* :deep()을 사용하여 v-html 내부의 요소에 스타일 적용 */
-.blog-content :deep(h1),
-.blog-content :deep(h2),
-.blog-content :deep(h3) {
-  margin-top: 24px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-  text-align: left;
-}
-.blog-content :deep(h2) {
-  font-size: 20px;
-}
-
-.blog-content :deep(table) {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
-}
-
-.blog-content :deep(th),
-.blog-content :deep(td) {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-.content-style {
-  margin: 0;
-  font-size: var(--font-size-default);
-}
 hr {
   border: none;
   border-top: 1px solid #eee;
@@ -586,22 +597,22 @@ hr {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s;
-  display: flex; /* flexbox 적용 */
-  flex-direction: column; /* 세로 정렬 */
-  height: auto; /* 유동적으로 높이 조절 */
+  display: flex;
+  flex-direction: column;
+  height: auto;
 }
 .card-container-small:hover {
   transform: scale(1.05);
 }
 .img-container-small {
   width: 100%;
-  height: 0; /* padding-bottom으로 높이 지정 */
-  padding-bottom: 56.25%; /* 16:9 비율 유지 (예시) */
-  position: relative; /* img 태그 absolute 포지셔닝을 위해 */
+  height: 0;
+  padding-bottom: 56.25%;
+  position: relative;
   overflow: hidden;
 }
 .img-container-small img {
-  position: absolute; /* 부모 컨테이너 내에서 위치 지정 */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -611,7 +622,7 @@ hr {
 .card-description-small {
   padding: var(--size-default);
   color: #000;
-  flex-grow: 1; /* 남은 공간을 채우도록 */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -623,151 +634,50 @@ hr {
   height: 100%;
   color: var(--color-primary);
 }
-
-/* --- 반응형 그리드 (.card-group--grid 참고) --- */
-
-/* Medium devices (tablets, 600px and up) */
 @media (min-width: 600px) {
   .contents-grid {
-    column-gap: 1rem;
-    row-gap: 1rem;
     grid-template-columns: repeat(6, minmax(0.3125rem, 1fr));
-    /* grid-template-rows: repeat(3, minmax(0.3125rem, 1fr)); */
-    margin-left: 1rem;
-    margin-right: 1rem;
   }
   .card-container {
-    grid-column-end: span 3; /* 6칸 그리드에서 3칸 (1/2) = 2개 */
+    grid-column-end: span 3;
   }
 }
-
-/* Large devices (desktops, 1024px and up) */
 @media (min-width: 1024px) {
   .contents-grid {
     grid-template-columns: repeat(9, minmax(0.3125rem, 1fr));
-    column-gap: 1rem; /* 20px */
-    row-gap: 1rem; /* 20px */
-    margin-left: 1rem;
-    margin-right: 1rem;
   }
   .card-container {
-    grid-column-end: span 3; /* 9칸 그리드에서 3칸 (1/3) = 3개 */
+    grid-column-end: span 3;
   }
 }
-
-/* Extra large devices (large desktops, 1441px and up) */
-@media (min-width: 1441px) {
-  .contents-grid {
-    column-gap: 1rem; /* 27px */
-    row-gap: 1rem; /* 27px */
-    margin-left: 1rem; /* 80px */
-    margin-right: 1rem; /* 80px */
-  }
-}
-
-/* Mobile devices (less than 768px) */
 @media (max-width: 768px) {
   .home-container {
     flex-direction: column;
-    height: auto;
-    min-height: 100vh;
   }
   .sidebar {
     width: 100%;
-    height: auto;
-    border-left: 0;
-    border-right: 0;
     position: static;
     height: auto;
     overflow-y: visible;
     padding: 1rem;
     padding-bottom: 0;
   }
-  .sidebar h3 {
-    display: none;
-  }
   .sidebar ul {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
     flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   .sidebar li {
     flex-grow: 1;
     max-width: 150px;
   }
   .sidebar li a {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    flex-direction: row;
-    align-items: center;
-    min-height: 40px;
     border-radius: 32px;
     border: 1px solid #eee;
-    white-space: pre;
-  }
-  .main-content {
-    height: auto;
   }
   .contents-grid {
-    grid-template-columns: 1fr; /* 모바일에서는 1열 */
-    grid-template-rows: auto;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    height: auto;
-    gap: 1rem; /* 모바일에서도 gap을 통일 */
-  }
-  .card-container {
-    height: auto; /* 카드 높이 자동 조정 */
-  }
-  .blog-header {
     grid-template-columns: 1fr;
-  }
-  .thumbnail-container,
-  .summary-container {
-    grid-column: 1 / -1;
-    text-align: center;
-  }
-  .thumbnail-container {
-    grid-row: 2;
-    margin-bottom: 10px;
-  }
-  .summary-container {
-    grid-row: 3;
-  }
-}
-
-/* New media query for viewport height */
-@media (max-height: 720px) {
-  .main-content {
-    height: calc(
-      100vh - 80px
-    ); /* 헤더 높이를 뺀 만큼 계산 (예시: 헤더 높이 80px) */
-    overflow-y: auto;
-  }
-
-  .main-content::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .main-content::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 4px;
-  }
-
-  .main-content::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-  }
-
-  .contents-grid {
-    height: auto; /* contents-grid 자체의 높이 제한 해제 */
-  }
-
-  .card-container {
-    min-height: unset; /* min-height 제한 해제 */
   }
 }
 </style>
