@@ -41,7 +41,7 @@
         </div>
         <hr />
         <div class="blog-content">
-          <p class="content-style" v-html="selectedCard.content"></p>
+          <div class="content-style" v-html="selectedCard.content"></div>
         </div>
 
         <div class="comment-section">
@@ -108,100 +108,121 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { viewState } from "../store/viewState";
 import { useRoute } from "vue-router";
+import { marked } from "marked";
+
+// =================================================================
+// ==============  👇 여기를 true/false 로 바꾸세요 👇 ==============
+// =================================================================
+const USE_LOCAL_DATA = false; // true: 로컬 데이터 사용, false: 서버 API 사용
+// =================================================================
 
 const route = useRoute();
-
-// --- 데이터 ---
-const cards = ref([]); // 하드코딩된 데이터를 빈 배열로 변경
+const cards = ref([]);
 const selectedCard = ref(null);
 const selectedTag = ref("전체");
-const loading = ref(true); // 로딩 상태 추가
-const error = ref(null); // 에러 상태 추가
+const loading = ref(true);
+const error = ref(null);
 
-// 백엔드 API의 기본 URL
-const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app"; // <-- Vercel에서 확인한 도메인으로 변경
+// --- 로컬 데이터 정의 ---
+const localPosts = [
+  {
+    id: '1',
+    title: '2025년 소모임 어플 추천 TOP 3',
+    summary: '안녕하세요! 김포에서 상위권 자기계발 모임을 운영중이에요. 제가 직접 써보고 분석한 소모임 앱 선택 기준, 간단하게 공유해 드릴게요.',
+    image: '/assets/img/open-graph.png',
+    tags: ['커뮤니티'],
+    creationDate: '2025-06-22',
+    content: `# 2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.
 
-// 블로그 게시물 목록을 가져오는 함수
+## 소모임 어플, 어떤 기준으로 고르고 계신가요?
+
+저는 현재 제가 살고 있는 동네에서 당근 모임을 통한 커뮤니티를 운영 중입니다.
+자기계발 분야에서는 1위를 해본 적도 있고, 열혈 유저 분들도 꽤 있는 모임을 운영 중이에요.
+이 외에도 다양한 서비스의 모임에 열혈 유저로도 활동해보았는데요.
+제가 모임을 운영하기 위해 어떤 서비스를 선택했고, 그 기준은 어땠는지 공유해 볼게요!
+
+### **어떤 앱을 선택해야 할까? 내 모임에 딱 맞는 플랫폼 최종 선택 가이드**
+
+| 플랫폼 | 장점 👍 | 단점 👎 | 추천 모임 유형 |
+| --- | --- | --- | --- |
+| 카카오톡 오픈채팅 | • 높은 접근성 | • '빌런' 유입 가능성 | • 전국 단위 서비스 |
+| 문토 (Munto) | • 전문성 기반 운영 | • 제한된 사용자 풀 | • 수익화 모임 |
+| 당근 (Karrot) | • 지역 기반 | • 한정적인 유저 풀 | • 동네 친목 모임 |`
+  }
+];
+
+// --- API 및 데이터 로딩 로직 ---
+const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app";
+
 const fetchPosts = async () => {
   loading.value = true;
   error.value = null;
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/posts`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+
+  if (USE_LOCAL_DATA) {
+    // 로컬 데이터 사용
+    console.log("로컬 데이터를 불러옵니다.");
+    setTimeout(() => {
+      cards.value = localPosts.map(post => {
+        const { content, ...cardData } = post;
+        return cardData;
+      });
+      loading.value = false;
+    }, 300);
+  } else {
+    // 서버 API 사용
+    console.log("서버에서 데이터를 불러옵니다.");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/posts`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      cards.value = await response.json();
+    } catch (err) {
+      console.error("Failed to fetch posts:", err);
+      error.value = "게시물을 불러오지 못했습니다. 서버를 확인해주세요.";
+    } finally {
+      loading.value = false;
     }
-    const data = await response.json();
-    cards.value = data; // Notion에서 가져온 데이터로 cards 업데이트
-  } catch (err) {
-    console.error("Failed to fetch posts:", err);
-    error.value = "게시물을 불러오지 못했습니다. 서버를 확인해주세요.";
-  } finally {
-    loading.value = false;
   }
 };
 
-// 특정 블로그 게시물의 상세 내용을 가져오는 함수
 const fetchPostContent = async (id) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/posts/${id}/content`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  if (USE_LOCAL_DATA) {
+    const post = localPosts.find(p => p.id === id);
+    return post ? post.content : "로컬 데이터를 찾을 수 없습니다.";
+  } else {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/posts/${id}/content`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      return data.content;
+    } catch (err) {
+      console.error(`Failed to fetch content for post ${id}:`, err);
+      return "게시물 내용을 불러올 수 없습니다.";
     }
-    const data = await response.json();
-    return data.content; // 백엔드에서 반환하는 content 필드
-  } catch (err) {
-    console.error(`Failed to fetch content for post ${id}:`, err);
-    // 오류 발생 시 임시 메시지 또는 요약을 반환
-    return "게시물 내용을 불러올 수 없습니다.";
   }
 };
 
-// --- Computed 속성 (기존과 동일) ---
+
+// --- 아래부터는 기존 로직과 동일합니다 ---
+
 const allTags = computed(() => {
   const tags = new Set();
-  cards.value.forEach((card) => {
+  const source = USE_LOCAL_DATA ? localPosts : cards.value;
+  source.forEach((card) => {
     card.tags.forEach((tag) => tags.add(tag));
   });
   return Array.from(tags);
 });
 
 const filteredCards = computed(() => {
-  if (selectedTag.value === "전체") {
-    return cards.value;
-  }
+  if (selectedTag.value === "전체") return cards.value;
   return cards.value.filter((card) => card.tags.includes(selectedTag.value));
 });
 
-const previousCard = computed(() => {
-  if (!selectedCard.value) return null;
-  const currentIndex = filteredCards.value.findIndex(
-    (c) => c.id === selectedCard.value.id
-  );
-  return currentIndex > 0 ? filteredCards.value[currentIndex - 1] : null;
-});
-
-const nextCard = computed(() => {
-  if (!selectedCard.value) return null;
-  const currentIndex = filteredCards.value.findIndex(
-    (c) => c.id === selectedCard.value.id
-  );
-  return currentIndex < filteredCards.value.length - 1
-    ? filteredCards.value[currentIndex + 1]
-    : null;
-});
-
-// --- 메소드 ---
-const selectTag = (tag) => {
-  selectedTag.value = tag;
-  selectedCard.value = null; // 태그 변경 시 상세 보기 초기화
-};
-
-// selectCard 함수를 수정하여 상세 내용도 가져오도록 변경
 const selectCard = async (card) => {
-  // 로딩 상태를 true로 설정하여 사용자에게 데이터를 가져오는 중임을 알림
-  selectedCard.value = { ...card, content: "내용을 불러오는 중..." }; // 임시 로딩 메시지
-  const content = await fetchPostContent(card.id);
-  selectedCard.value = { ...card, content: content }; // 실제 내용으로 업데이트
+  selectedCard.value = { ...card, content: "내용을 불러오는 중..." };
+  const markdownContent = await fetchPostContent(card.id);
+  const htmlContent = marked.parse(markdownContent);
+  selectedCard.value = { ...card, content: htmlContent };
 };
 
 const goBack = () => {
@@ -209,9 +230,25 @@ const goBack = () => {
   selectedTag.value = "전체";
 };
 
-// --- 라이프사이클 훅 ---
+const previousCard = computed(() => {
+  if (!selectedCard.value) return null;
+  const currentIndex = filteredCards.value.findIndex( c => c.id === selectedCard.value.id );
+  return currentIndex > 0 ? filteredCards.value[currentIndex - 1] : null;
+});
+
+const nextCard = computed(() => {
+  if (!selectedCard.value) return null;
+  const currentIndex = filteredCards.value.findIndex( c => c.id === selectedCard.value.id );
+  return currentIndex < filteredCards.value.length - 1 ? filteredCards.value[currentIndex + 1] : null;
+});
+
+const selectTag = (tag) => {
+  selectedTag.value = tag;
+  selectedCard.value = null;
+};
+
 onMounted(() => {
-  fetchPosts(); // 컴포넌트 마운트 시 블로그 게시물 데이터 로드
+  fetchPosts();
   viewState.resetHomeView = goBack;
   updateMetaTags(route.meta.title, route.meta.description);
 });
@@ -241,26 +278,23 @@ function updateMetaTags(title, description) {
 </script>
 
 <style scoped>
-/* 기존 스타일은 유지하고 아래 스타일만 추가 또는 수정합니다. */
-
+/* CSS는 이전과 동일합니다. */
 .loading-message,
 .error-message {
   text-align: center;
   padding: 20px;
-  font-size: 1.2rem;
+  font-size: 16px;
   color: var(--color-gray);
 }
-
-/* --- 카드 설명 & 푸터 스타일 --- */
 .card-description {
   justify-content: space-between; /* 내부 요소를 위아래로 분산 */
   height: 100%;
-  .card-description-title {
-    font-size: 16px;
-  }
-  .card-description-detail {
-    font-size: 12px;
-  }
+}
+.card-description-title {
+  font-size: 16px;
+}
+.card-description-detail {
+  font-size: 12px;
 }
 .card-footer {
   display: flex;
@@ -274,8 +308,6 @@ function updateMetaTags(title, description) {
   margin: 0;
   white-space: nowrap; /* 날짜가 줄바꿈되지 않도록 */
 }
-
-/* 댓글(구글 폼) 버튼 섹션 */
 .comment-section {
   text-align: center;
   padding: 20px;
@@ -304,15 +336,11 @@ function updateMetaTags(title, description) {
   color: #000;
   transition: background-color 0.3s, color 0.3s;
 }
-
-/* --- 사이드바 활성/비활성 스타일 --- */
 .sidebar li.active a {
   background-color: #eee;
   color: #000;
   font-weight: 700;
 }
-
-/* --- 카드 및 상세 뷰에 태그 스타일 추가 --- */
 .tags-container {
   display: flex;
   gap: 4px;
@@ -326,8 +354,6 @@ function updateMetaTags(title, description) {
   color: #000;
   padding: 2px 8px;
 }
-
-/* --- 기존 스타일 (변경 없음) --- */
 .home-container {
   display: flex;
   width: 100%;
@@ -347,7 +373,6 @@ function updateMetaTags(title, description) {
   height: 100vh;
   overflow-y: auto;
 }
-
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -379,7 +404,6 @@ function updateMetaTags(title, description) {
 
   /* height: 100vh; 이 속성을 제거하여 유동적인 높이를 허용합니다. */
 }
-
 .card-container {
   display: flex;
   flex-direction: column;
@@ -434,12 +458,12 @@ function updateMetaTags(title, description) {
 }
 .blog-detail-view {
   color: #000;
-  .related-content {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 20px;
-  }
+}
+.related-content {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
 }
 .blog-header {
   display: flex;
@@ -456,12 +480,12 @@ function updateMetaTags(title, description) {
   cursor: pointer;
   font-size: var(--font-size-default);
   padding: 8px 12px;
-  &:hover {
-    background-color: #eee;
-    color: #000;
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 8px;
-  }
+}
+.back-button:hover {
+  background-color: #eee;
+  color: #000;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 8px;
 }
 .thumbnail-container {
   grid-column: 1 / 2;
@@ -478,12 +502,12 @@ function updateMetaTags(title, description) {
   width: 100%;
   flex-direction: column;
   gap: 1rem;
-  .summary-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+}
+.summary-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 .summary-container h2 {
   color: var(--color-primary);
@@ -492,10 +516,36 @@ function updateMetaTags(title, description) {
 .blog-content {
   line-height: 1.8;
   padding: 1rem;
-  .content-style {
-    margin: 0;
-    font-size: var(--font-size-default);
-  }
+}
+
+/* :deep()을 사용하여 v-html 내부의 요소에 스타일 적용 */
+.blog-content :deep(h1),
+.blog-content :deep(h2),
+.blog-content :deep(h3) {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+}
+.blog-content :deep(h2) {
+  font-size: 20px;
+}
+
+.blog-content :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.blog-content :deep(th),
+.blog-content :deep(td) {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+.content-style {
+  margin: 0;
+  font-size: var(--font-size-default);
 }
 hr {
   border: none;
@@ -513,12 +563,12 @@ hr {
   font-size: inherit;
   background-color: unset;
   border: 0;
-  &:hover {
-    background-color: #eee;
-    color: #000;
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 8px;
-  }
+}
+.blog-navigation button:hover {
+  background-color: #eee;
+  color: #000;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 8px;
 }
 .blog-navigation button:disabled {
   opacity: 0.5;
