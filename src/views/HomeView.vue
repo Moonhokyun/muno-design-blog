@@ -40,7 +40,7 @@
           </div>
         </div>
         <hr />
-        <div class="blog-content" v-html="selectedCard.content"></div>
+        <div class="blog-content post-content" v-html="selectedCard.content"></div>
 
         <div class="button-group">
           <a
@@ -180,9 +180,9 @@ const fetchPostContent = async (id) => {
       const response = await fetch(`${API_BASE_URL}/api/posts/${id}/content`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return data.content;
+      return data.content; // 백엔드에서 받은 HTML을 그대로 반환
     } catch (err) {
-      return "게시물 내용을 불러올 수 없습니다.";
+      return "<p>콘텐츠를 불러오는 데 실패했습니다.</p>";
     }
   }
 };
@@ -248,8 +248,8 @@ watch(() => route.query.post, async (newId) => {
         const cardToSelect = cards.value.find(c => c.id === newId);
         if (cardToSelect) {
             selectedCard.value = { ...cardToSelect, content: "내용을 불러오는 중..." };
-            const markdownContent = await fetchPostContent(newId);
-            const htmlContent = marked.parse(markdownContent);
+            // marked 라이브러리 제거, HTML을 직접 사용
+            const htmlContent = await fetchPostContent(newId);
             selectedCard.value = { ...cardToSelect, content: htmlContent };
         } else {
             error.value = "해당 게시물을 찾을 수 없습니다.";
@@ -259,6 +259,7 @@ watch(() => route.query.post, async (newId) => {
         selectedCard.value = null;
     }
 }, { immediate: true });
+
 
 onMounted(() => {
   fetchPosts();
@@ -277,6 +278,21 @@ onUnmounted(() => {
   padding: 1rem;
   overflow-x: auto; /* 내용이 넘칠 때만 가로 스크롤 생성 */
 }
+/* 기존 스타일 ... */
+
+/* [추가] Notion 블록 스타일에 맞게 CSS 추가 */
+.post-content :deep(.notion-image-block) {
+  margin: 2em 0;
+  text-align: center;
+}
+.post-content :deep(.notion-image-block img) {
+  max-width: 100%;
+  border-radius: 8px;
+}
+.post-content :deep(.notion-list-item-box) {
+  padding-left: 2em;
+}
+
 .blog-content :deep(h1),
 .blog-content :deep(h2),
 .blog-content :deep(h3) {
