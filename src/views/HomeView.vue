@@ -92,41 +92,22 @@
         </div>
       </div>
 
-      <div class="contents-grid">
-  <section
-    v-for="card in filteredCards"
-    :key="card.id"
-    class="card-container"
-    @click="navigateToCard(card)"
-  >
-    <div class="img-container">
-      <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
-    </div>
-    <div class="card-description">
-      <h3 class="card-description-title">{{ card.title }}</h3>
-      <p class="card-description-detail">{{ card.summary }}</p>
-    </div>
-  </section>
+      <div v-else class="contents-grid">
+        <section
+          v-for="card in filteredCards"
+          :key="card.id"
+          class="card-container"
+          @click="navigateToCard(card)"
+        >
+          <div class="img-container">
+    <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
 </div>
-
-<div class="related-content">
-  <h3>다른 콘텐츠 둘러보기</h3>
-  <div class="contents-grid">
-    <section
-      v-for="card in filteredCards"
-      :key="card.id"
-      class="card-container-small"
-      @click="navigateToCard(card)"
-    >
-      <div class="img-container-small">
-        <img :src="card.image" alt="Image" />
+          <div class="card-description">
+            <h3 class="card-description-title">{{ card.title }}</h3>
+            <p class="card-description-detail">{{ card.summary }}</p>
+          </div>
+        </section>
       </div>
-      <div class="card-description-small">
-        <h4>{{ card.title }}</h4>
-      </div>
-    </section>
-  </div>
-</div>
     </main>
   </div>
 </template>
