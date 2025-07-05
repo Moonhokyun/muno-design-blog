@@ -40,7 +40,10 @@
           </div>
         </div>
         <hr />
-        <div class="blog-content post-content" v-html="selectedCard.content"></div>
+        <div
+          class="blog-content post-content"
+          v-html="selectedCard.content"
+        ></div>
 
         <div class="button-group">
           <a
@@ -58,7 +61,10 @@
 
         <hr />
         <div class="blog-navigation">
-          <button :disabled="!previousCard" @click="navigateToCard(previousCard)">
+          <button
+            :disabled="!previousCard"
+            @click="navigateToCard(previousCard)"
+          >
             &lt; 이전 글
           </button>
           <button :disabled="!nextCard" @click="navigateToCard(nextCard)">
@@ -76,7 +82,7 @@
               @click="navigateToCard(card)"
             >
               <div class="img-container-small">
-                <img :src="card.image" alt="Image" />
+                <img :src="card.thumbnail" alt="Image" />
               </div>
               <div class="card-description-small">
                 <h4>{{ card.title }}</h4>
@@ -94,7 +100,7 @@
           @click="navigateToCard(card)"
         >
           <div class="img-container">
-            <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
+            <img :src="card.thumbnail" :alt="card.title + ' 썸네일 이미지'" />
           </div>
           <div class="card-description">
             <h3 class="card-description-title">{{ card.title }}</h3>
@@ -129,12 +135,15 @@ const copyButtonState = ref("default");
 
 const localPosts = [
   {
-    id: '1',
-    title: '2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.',
-    summary: '안녕하세요! 김포에서 상위권 자기계발 모임을 운영중이에요. 제가 직접 써보고 분석한 소모임 앱 선택 기준, 간단하게 공유해 드릴게요.',
-    image: '/assets/img/open-graph.png',
-    tags: ['커뮤니티'],
-    creationDate: '2025-06-22',
+    id: "1",
+    title:
+      "2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.",
+    summary:
+      "안녕하세요! 김포에서 상위권 자기계발 모임을 운영중이에요. 제가 직접 써보고 분석한 소모임 앱 선택 기준, 간단하게 공유해 드릴게요.",
+    image: "/assets/img/open-graph.png",
+    thumbnail: "/assets/img/open-graph.png",
+    tags: ["커뮤니티"],
+    creationDate: "2025-06-22",
     content: `# 2025년 소모임 어플 추천 TOP 3, 우리 동네 자기계발 분야 1위 모임장은 이것부터 확인했습니다.
 ## 소모임 어플, 어떤 기준으로 고르고 계신가요?
 ![대체 텍스트: 당근 동네생활 앱 캡쳐](/assets/img/open-graph.png)
@@ -143,8 +152,8 @@ const localPosts = [
 | :--- | :--- | :--- | :--- |
 | 카카오톡 오픈채팅 | • 높은 접근성 | • '빌런' 유입 가능성 | • 전국 단위 서비스 |
 | 문토 (Munto) | • 전문성 기반 운영 | • 제한된 사용자 풀 | • 수익화 모임 |
-| 당근 (Karrot) | • 지역 기반 | • 한정적인 유저 풀 | • 동네 친목 모임 |`
-  }
+| 당근 (Karrot) | • 지역 기반 | • 한정적인 유저 풀 | • 동네 친목 모임 |`,
+  },
 ];
 
 const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app";
@@ -155,13 +164,14 @@ const fetchPosts = async () => {
 
   if (USE_LOCAL_DATA) {
     setTimeout(() => {
-      cards.value = localPosts.map(post => ({ ...post, content: undefined }));
+      cards.value = localPosts.map((post) => ({ ...post, content: undefined }));
       loading.value = false;
     }, 300);
   } else {
     try {
       const response = await fetch(`${API_BASE_URL}/api/posts`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
       cards.value = await response.json();
     } catch (err) {
       error.value = "게시물을 불러오지 못했습니다.";
@@ -173,12 +183,13 @@ const fetchPosts = async () => {
 
 const fetchPostContent = async (id) => {
   if (USE_LOCAL_DATA) {
-    const post = localPosts.find(p => p.id === id);
+    const post = localPosts.find((p) => p.id === id);
     return post ? post.content : "로컬 데이터를 찾을 수 없습니다.";
   } else {
     try {
       const response = await fetch(`${API_BASE_URL}/api/posts/${id}/content`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       return data.content; // 백엔드에서 받은 HTML을 그대로 반환
     } catch (err) {
@@ -188,8 +199,8 @@ const fetchPostContent = async (id) => {
 };
 
 const navigateToCard = (card) => {
-    if (!card) return;
-    router.push({ query: { post: card.id } });
+  if (!card) return;
+  router.push({ query: { post: card.id } });
 };
 
 const goBack = () => {
@@ -224,14 +235,20 @@ const filteredCards = computed(() => {
 
 const previousCard = computed(() => {
   if (!selectedCard.value) return null;
-  const currentIndex = filteredCards.value.findIndex( c => c.id === selectedCard.value.id );
+  const currentIndex = filteredCards.value.findIndex(
+    (c) => c.id === selectedCard.value.id
+  );
   return currentIndex > 0 ? filteredCards.value[currentIndex - 1] : null;
 });
 
 const nextCard = computed(() => {
   if (!selectedCard.value) return null;
-  const currentIndex = filteredCards.value.findIndex( c => c.id === selectedCard.value.id );
-  return currentIndex < filteredCards.value.length - 1 ? filteredCards.value[currentIndex + 1] : null;
+  const currentIndex = filteredCards.value.findIndex(
+    (c) => c.id === selectedCard.value.id
+  );
+  return currentIndex < filteredCards.value.length - 1
+    ? filteredCards.value[currentIndex + 1]
+    : null;
 });
 
 const selectTag = (tag) => {
@@ -239,27 +256,35 @@ const selectTag = (tag) => {
   goBack();
 };
 
-watch(() => route.query.post, async (newId) => {
+watch(
+  () => route.query.post,
+  async (newId) => {
     if (loading.value) {
-        await new Promise(resolve => watch(loading, (val) => !val && resolve()));
+      await new Promise((resolve) =>
+        watch(loading, (val) => !val && resolve())
+      );
     }
 
     if (newId) {
-        const cardToSelect = cards.value.find(c => c.id === newId);
-        if (cardToSelect) {
-            selectedCard.value = { ...cardToSelect, content: "내용을 불러오는 중..." };
-            // marked 라이브러리 제거, HTML을 직접 사용
-            const htmlContent = await fetchPostContent(newId);
-            selectedCard.value = { ...cardToSelect, content: htmlContent };
-        } else {
-            error.value = "해당 게시물을 찾을 수 없습니다.";
-            selectedCard.value = null;
-        }
-    } else {
+      const cardToSelect = cards.value.find((c) => c.id === newId);
+      if (cardToSelect) {
+        selectedCard.value = {
+          ...cardToSelect,
+          content: "내용을 불러오는 중...",
+        };
+        // marked 라이브러리 제거, HTML을 직접 사용
+        const htmlContent = await fetchPostContent(newId);
+        selectedCard.value = { ...cardToSelect, content: htmlContent };
+      } else {
+        error.value = "해당 게시물을 찾을 수 없습니다.";
         selectedCard.value = null;
+      }
+    } else {
+      selectedCard.value = null;
     }
-}, { immediate: true });
-
+  },
+  { immediate: true }
+);
 
 onMounted(() => {
   fetchPosts();
@@ -306,9 +331,9 @@ onUnmounted(() => {
   font-size: 20px;
 }
 .blog-content :deep(img) {
-    max-width: 100%;
-    height: auto;
-    display: block;
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 /* [수정] 테이블 스타일 변경 */
 .blog-content :deep(table) {
@@ -335,12 +360,24 @@ onUnmounted(() => {
 }
 
 /* 테이블의 네 모서리에 border-radius 적용 */
-.blog-content :deep(thead tr:first-child > th:first-child) { border-top-left-radius: 6px; }
-.blog-content :deep(thead tr:first-child > th:first-child) { border-bottom-left-radius: 6px; }
-.blog-content :deep(thead tr:first-child > th:last-child) { border-top-right-radius: 6px; }
-.blog-content :deep(thead tr:first-child > th:last-child) { border-bottom-right-radius: 6px; }
-.blog-content :deep(tbody tr:last-child > td:first-child) { border-bottom-left-radius: 6px; }
-.blog-content :deep(tbody tr:last-child > td:last-child) { border-bottom-right-radius: 6px; }
+.blog-content :deep(thead tr:first-child > th:first-child) {
+  border-top-left-radius: 6px;
+}
+.blog-content :deep(thead tr:first-child > th:first-child) {
+  border-bottom-left-radius: 6px;
+}
+.blog-content :deep(thead tr:first-child > th:last-child) {
+  border-top-right-radius: 6px;
+}
+.blog-content :deep(thead tr:first-child > th:last-child) {
+  border-bottom-right-radius: 6px;
+}
+.blog-content :deep(tbody tr:last-child > td:first-child) {
+  border-bottom-left-radius: 6px;
+}
+.blog-content :deep(tbody tr:last-child > td:last-child) {
+  border-bottom-right-radius: 6px;
+}
 
 .loading-message,
 .error-message {
@@ -395,17 +432,17 @@ onUnmounted(() => {
   color: #000;
 }
 .share-button {
-    background-color: transparent;
-    border: 1px solid #d4d4d4;
-    color: #d4d4d4;
-    min-width: 80px;
+  background-color: transparent;
+  border: 1px solid #d4d4d4;
+  color: #d4d4d4;
+  min-width: 80px;
 }
 .share-button:hover {
-    background-color: #eee;
-    color: #000;
+  background-color: #eee;
+  color: #000;
 }
 .share-button .mdi {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .sidebar li.active a {
