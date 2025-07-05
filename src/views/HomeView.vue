@@ -82,8 +82,8 @@
               @click="navigateToCard(card)"
             >
               <div class="img-container-small">
-                <img :src="card.thumbnail" alt="Image" />
-              </div>
+    <img :src="card.image" alt="Image" />
+</div>
               <div class="card-description-small">
                 <h4>{{ card.title }}</h4>
               </div>
@@ -100,8 +100,8 @@
           @click="navigateToCard(card)"
         >
           <div class="img-container">
-            <img :src="card.thumbnail" :alt="card.title + ' 썸네일 이미지'" />
-          </div>
+    <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
+</div>
           <div class="card-description">
             <h3 class="card-description-title">{{ card.title }}</h3>
             <p class="card-description-detail">{{ card.summary }}</p>
