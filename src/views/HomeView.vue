@@ -24,7 +24,9 @@
       </div>
       <div v-else-if="selectedCard" class="blog-detail-view">
         <div class="blog-header">
-          <button @click="goBack" class="back-button">← 뒤로 가기</button>
+          <button @click="goBack" class="back-button">
+            <span class="mdi mdi-chevron-left"></span>
+          </button>
           <div class="summary-container">
             <h2>{{ selectedCard.title }}</h2>
             <div class="summary-info">
@@ -82,8 +84,8 @@
               @click="navigateToCard(card)"
             >
               <div class="img-container-small">
-    <img :src="card.image" alt="Image" />
-</div>
+                <img :src="card.image" alt="Image" />
+              </div>
               <div class="card-description-small">
                 <h4>{{ card.title }}</h4>
               </div>
@@ -100,8 +102,8 @@
           @click="navigateToCard(card)"
         >
           <div class="img-container">
-    <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
-</div>
+            <img :src="card.image" :alt="card.title + ' 썸네일 이미지'" />
+          </div>
           <div class="card-description">
             <h3 class="card-description-title">{{ card.title }}</h3>
             <p class="card-description-detail">{{ card.summary }}</p>
@@ -306,6 +308,9 @@ onUnmounted(() => {
 /* 기존 스타일 ... */
 
 /* [추가] Notion 블록 스타일에 맞게 CSS 추가 */
+.post-content :deep(.notion-table-block) {
+  overflow: auto;
+}
 .post-content :deep(.notion-image-block) {
   margin: 2em 0;
   text-align: center;
@@ -316,6 +321,21 @@ onUnmounted(() => {
 }
 .post-content :deep(.notion-list-item-box) {
   padding-left: 2em;
+}
+
+/* [추가] 블로그 본문 링크 Embed 스타일 */
+.post-content :deep(a) {
+  display: block;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  margin: 1em 0;
+  transition: background-color 0.2s;
+}
+.post-content :deep(a:hover) {
+  background-color: #f5f5f5;
 }
 
 .blog-content :deep(h1),
@@ -586,13 +606,21 @@ onUnmounted(() => {
   border: none;
   cursor: pointer;
   font-size: var(--font-size-default);
-  padding: 8px 12px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.back-button .mdi {
+  font-size: 24px;
 }
 .back-button:hover {
   background-color: #eee;
   color: #000;
   transition: background-color 0.3s, color 0.3s;
-  border-radius: 8px;
 }
 .summary-container {
   display: flex;
@@ -716,13 +744,17 @@ hr {
     padding-bottom: 0;
   }
   .sidebar ul {
+    display: flex; /* [수정] flex display 추가 */
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px; /* [수정] gap 추가 */
+    overflow-x: auto; /* [수정] 가로 스크롤 추가 */
+    white-space: nowrap; /* [수정] 줄바꿈 방지 */
+    padding-bottom: 8px; /* 스크롤바 공간 확보 */
   }
   .sidebar li {
-    flex-grow: 1;
-    max-width: 150px;
+    flex-shrink: 0; /* [수정] 아이템이 줄어들지 않도록 설정 */
+    width: auto; /* [수정] 너비 자동 조정 */
+    max-width: none;
   }
   .sidebar li a {
     justify-content: center;

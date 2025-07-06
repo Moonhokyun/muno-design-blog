@@ -2,52 +2,51 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
 
 :root {
+  /* Light Theme Colors */
+  --color-background: #ffffff;
+  --color-text-primary: #181818;
+  --color-text-secondary: #6f6f6f;
   --color-primary: #181818;
-  --color-primary-opacity: #009fee3e;
   --color-secondary: #00547f;
-  --color-black: #181818;
-  --color-black-opacity: #1818180a;
-  --color-gray: #6f6f6f;
-  --color-white: #ffffff;
-  --color-white-opacity: #ffffff0a;
-  body,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  span,
-  div,
-  a,
-  li,
-  ul,
-  ol,
-  label,
-  input,
-  textarea,
-  button {
-    color: #000;
-  }
-  --color-light-gray: #e0e0e0; /* 기존에 있던 색상 유지 */
-  --color-background: #121212; /* 기존에 있던 색상 유지 */
-  --shadow-color: rgba(0, 0, 0, 0.1); /* 기존에 있던 색상 유지 */
+  --color-border: #eee;
+  --color-card-bg: #ffffff;
+  --color-button-bg: #181818;
+  --color-button-text: #ffffff;
+  --color-button-hover-bg: #eee;
+  --color-button-hover-text: #000;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 
-  /* --- 2. Sizing Units --- */
+  /* Sizing Units */
   --size-default: 0;
   --font-size-default: 14px;
   --line-height-default: 1.5;
   --border-radius: 8px;
 }
 
+html.dark {
+  /* Dark Theme Colors */
+  --color-background: #121212;
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #a0a0a0;
+  --color-primary: #e0e0e0;
+  --color-secondary: #86a8e7;
+  --color-border: #333333;
+  --color-card-bg: #1e1e1e;
+  --color-button-bg: #e0e0e0;
+  --color-button-text: #121212;
+  --color-button-hover-bg: #333333;
+  --color-button-hover-text: #e0e0e0;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+}
+
 body {
   font-family: "Noto Sans KR", sans-serif;
-  background-color: #fff;
-  color: var(--color-black);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
   margin: 0;
   display: flex;
   justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #app {
@@ -58,11 +57,16 @@ body {
   gap: 10px;
 }
 
+h1, h2, h3, h4, h5, h6, p, span, div, a, li, ul, ol, label, input, textarea, button {
+  color: var(--color-text-primary);
+  transition: color 0.3s;
+}
+
 h1 {
   color: var(--color-secondary);
   font-weight: 700;
   text-align: center;
-  font-size: var(--font-size-default); /* 변수 사용 */
+  font-size: var(--font-size-default);
 }
 
 h2,
@@ -71,8 +75,9 @@ h3 {
   color: var(--color-secondary);
   margin: 0;
   font-weight: 700;
-  font-size: var(--font-size-default); /* 변수 사용 */
+  font-size: var(--font-size-default);
 }
+
 [class*="flex"],
 [class*="Flex"],
 [class*="row"],
@@ -80,11 +85,11 @@ h3 {
   display: flex;
   gap: 10px;
 }
-/* --- Common Container Style --- */
+
 .dashboard-container {
-  padding: var(--size-default);
+  padding: 16px;
   border-radius: var(--border-radius);
-  box-shadow: 0 var(--size-default) var(--size-default) var(--shadow-color); /* 변수 사용 */
+  box-shadow: 0 var(--size-default) var(--size-default) var(--shadow-color);
   width: 100%;
   max-width: 800px;
   max-height: 400px;
@@ -92,43 +97,41 @@ h3 {
   flex-direction: column;
   box-sizing: border-box;
   gap: 10px;
-  background-color: var(--color-white-opacity);
+  background-color: var(--color-card-bg);
   align-items: center;
-  padding: 16px;
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-/* --- File Input Container --- */
 .file-input-container {
   text-align: center;
-  max-height: none; /* This container doesn't need a fixed height */
+  max-height: none;
 }
 
 .upload-btn {
-  background-color: var(--color-primary);
-  color: #000;
-  padding: var(--size-default) 24px; /* 변수 사용 */
+  background-color: var(--color-button-bg);
+  color: var(--color-button-text);
+  padding: var(--size-default) 24px;
   border: none;
-  border-radius: var(--size-default); /* 변수 사용 */
+  border-radius: var(--border-radius);
   cursor: pointer;
-  font-size: var(--font-size-default); /* 변수 사용 */
+  font-size: var(--font-size-default);
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .upload-btn:hover {
-  background-color: #eee;
-  color: #000;
+  background-color: var(--color-button-hover-bg);
+  color: var(--color-button-hover-text);
 }
 .upload-btn input[type="file"] {
   display: none;
 }
 .file-info {
-  margin-top: var(--size-default); /* 변수 사용 */
-  font-size: var(--font-size-default); /* 변수 사용 */
-  color: var(--color-gray);
+  margin-top: var(--size-default);
+  font-size: var(--font-size-default);
+  color: var(--color-text-secondary);
 }
 
-/* --- Main Content Area --- */
 .main-content-area {
   width: 100%;
   display: flex;
@@ -137,15 +140,13 @@ h3 {
   gap: 16px;
 }
 
-/* --- Chart Container --- */
 .chart-container {
   position: relative;
 }
 
-/* --- Table Container --- */
 .table-scroll-wrapper {
   overflow-y: auto;
-  border-color: var(--color-gray);
+  border-color: var(--color-border);
   width: 100%;
 }
 .table-scroll-wrapper::-webkit-scrollbar {
@@ -163,20 +164,19 @@ h3 {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-default); /* 변수 사용 */
-  border-color: var(--color-gray);
+  font-size: var(--font-size-default);
+  border-color: var(--color-border);
 }
 th,
 td {
-  padding: var(--size-default) var(--size-default); /* 변수 사용 */
-  text-align: left;
-  border-bottom: 1px solid #eee;
   padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
 }
 th {
   background-color: var(--color-primary);
   font-weight: 500;
-  color: #fff;
+  color: var(--color-button-text);
   position: sticky;
   top: 0;
 }
@@ -195,13 +195,12 @@ tbody tr {
   border-radius: 10px;
 }
 tbody tr:hover {
-  background-color: #eee;
+  background-color: var(--color-button-hover-bg);
 }
 tbody tr.selected {
-  background-color: #eee;
+  background-color: var(--color-button-hover-bg);
 }
 
-/* --- User Detail Container --- */
 .user-detail-container {
   justify-content: center;
 }
@@ -214,30 +213,26 @@ tbody tr.selected {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  .detail-item {
-    color: #000;
-    margin-bottom: var(--size-default); /* 변수 사용 */
-    font-size: var(--font-size-default); /* 변수 사용 */
-  }
-  .detail-item strong {
-    color: var(--color-gray);
-    display: inline-block;
-    width: 100px;
-  }
-  .introduction {
-    margin-top: var(--size-default); /* 변수 사용 */
-    padding: var(--size-default); /* 변수 사용 */
-    background-color: #eee;
-    border-radius: var(--size-default); /* 변수 사용 */
-    white-space: pre-wrap;
-    line-height: var(--line-height-default); /* 변수 사용 */
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: var(--border-radius);
-  }
+}
+.detail-item {
+  color: var(--color-text-primary);
+  margin-bottom: var(--size-default);
+  font-size: var(--font-size-default);
+}
+.detail-item strong {
+  color: var(--color-text-secondary);
+  display: inline-block;
+  width: 100px;
+}
+.introduction {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--color-button-hover-bg);
+  border-radius: var(--border-radius);
+  white-space: pre-wrap;
+  line-height: var(--line-height-default);
 }
 
-/* --- Export Container --- */
 .export-container {
   max-height: none;
   text-align: center;
