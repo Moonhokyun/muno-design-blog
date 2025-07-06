@@ -16,8 +16,9 @@
     </aside>
 
     <main class="main-content">
-      <div v-if="loading" class="loading-message">
-        블로그 게시물을 불러오는 중입니다...
+      <div v-if="loading" class="loading-container">
+        <div class="spinner"></div>
+        <p>블로그 게시물을 불러오는 중입니다... {{ loadingProgress }}%</p>
       </div>
       <div v-else-if="error" class="error-message">
         데이터를 불러오는데 실패했습니다: {{ error }}
@@ -51,7 +52,7 @@
           <a
             href="https://forms.gle/N83gwgwpiFEYMYEJ8"
             target="_blank"
-            class="action-button"
+            class="action-button feedback-button"
           >
             글에 대한 피드백 남기기 💬
           </a>
@@ -134,6 +135,8 @@ const selectedTag = ref("전체");
 const loading = ref(true);
 const error = ref(null);
 const copyButtonState = ref("default");
+const loadingProgress = ref(0);
+let progressInterval = null;
 
 const localPosts = [
   {
@@ -163,12 +166,22 @@ const API_BASE_URL = "https://notion-blog-backend-tau.vercel.app";
 const fetchPosts = async () => {
   loading.value = true;
   error.value = null;
+  loadingProgress.value = 0;
+
+  // 로딩 진행률 시뮬레이션 시작
+  progressInterval = setInterval(() => {
+    if (loadingProgress.value < 95) {
+      loadingProgress.value += 5;
+    }
+  }, 100);
 
   if (USE_LOCAL_DATA) {
     setTimeout(() => {
       cards.value = localPosts.map((post) => ({ ...post, content: undefined }));
+      loadingProgress.value = 100;
+      clearInterval(progressInterval);
       loading.value = false;
-    }, 300);
+    }, 1000); // 로컬 데이터도 약간의 딜레이를 주어 로딩 확인
   } else {
     try {
       const response = await fetch(`${API_BASE_URL}/api/posts`);
@@ -178,6 +191,8 @@ const fetchPosts = async () => {
     } catch (err) {
       error.value = "게시물을 불러오지 못했습니다.";
     } finally {
+      loadingProgress.value = 100;
+      clearInterval(progressInterval);
       loading.value = false;
     }
   }
@@ -433,8 +448,8 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-primary);
-  color: #fff;
+  background-color: var(--color-button-bg);
+  color: var(--color-button-text);
   padding: 8px 16px;
   text-decoration: none;
   font-size: var(--font-size-default);
@@ -764,5 +779,36 @@ hr {
   .contents-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  gap: 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: var(--color-primary);
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dark .feedback-button {
+  color: #000;
 }
 </style>
