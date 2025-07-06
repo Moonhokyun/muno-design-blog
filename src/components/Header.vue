@@ -3,13 +3,9 @@
     <div v-if="isMenuOpen" class="menu-backdrop" @click="closeMenu"></div>
 
     <div class="header-content">
-     <div class="left-section">
+      <div class="left-section">
         <router-link to="/" class="logo-area" @click="goHomeAndReset">
-          <img
-            :src="logoSrc"
-            alt="logo"
-            class="logo-image"
-          />
+          <img :src="logoSrc" alt="logo" class="logo-image" />
           <h1 class="desktop-title">Muno design blog</h1>
         </router-link>
         <div class="desktop-nav">
@@ -25,19 +21,22 @@
         <router-link to="/dashboard" class="dashboard-link">
           사용자 데이터 분석 대시보드
         </router-link>
-        <button @click="toggleTheme" class="theme-toggle-btn">
-          <span class="mdi" :class="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"></span>
+        <button
+          @click="toggleTheme"
+          class="theme-toggle-btn desktop-theme-toggle"
+        >
+          <span class="mdi mdi-lightbulb-outline"></span>
         </button>
         <div class="hamburger-button" @click="toggleMenu">
           <span v-if="!isMenuOpen">&#9776;</span>
           <span v-else>&times;</span>
         </div>
       </div>
-          <button @click="toggleTheme" class="theme-toggle-btn mobile-theme-toggle">
-      <span class="mdi" :class="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"></span>
-    </button>
-
     </div>
+
+    <button @click="toggleTheme" class="theme-toggle-btn mobile-theme-toggle">
+      <span class="mdi mdi-lightbulb-outline"></span>
+    </button>
 
     <div class="dropdown-menu" :class="{ open: isMenuOpen }">
       <nav>
@@ -58,7 +57,11 @@ const isMenuOpen = ref(false);
 const isDark = ref(false);
 const route = useRoute();
 
-const logoSrc = computed(() => isDark.value ? '/assets/img/portfolio_web_logo_white.svg' : '/assets/img/portfolio_web_logo_blue.svg');
+const logoSrc = computed(() =>
+  isDark.value
+    ? "/assets/img/portfolio_web_logo_white.svg"
+    : "/assets/img/portfolio_web_logo_blue.svg"
+);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -76,17 +79,17 @@ const goHomeAndReset = () => {
 const toggleTheme = () => {
   isDark.value = !isDark.value;
   if (isDark.value) {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
   } else {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
   }
 };
 
 onMounted(() => {
-  const theme = localStorage.getItem('theme');
-  isDark.value = theme === 'dark';
+  const theme = localStorage.getItem("theme");
+  isDark.value = theme === "dark";
 });
 
 watch(
@@ -99,7 +102,7 @@ watch(
 
 <style scoped>
 .app-header {
- width: 100%;
+  width: 100%;
   padding: 10px 20px;
   border-bottom: 1px solid var(--color-border);
   box-sizing: border-box;
@@ -117,7 +120,8 @@ watch(
   width: 100%;
 }
 
-.left-section, .right-section {
+.left-section,
+.right-section {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -187,22 +191,30 @@ watch(
 
 /* --- Theme Toggle Button --- */
 .theme-toggle-btn {
-  background: none;
+  background-color: #eee;
   border: none;
   cursor: pointer;
-  color: var(--color-text-primary);
   padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s;
 }
-.theme-toggle-btn:hover {
-  background-color: var(--color-button-hover-bg);
-}
+
 .theme-toggle-btn .mdi {
   font-size: 20px;
+  color: var(--color-text-primary);
 }
+
+.dark .theme-toggle-btn .mdi {
+  color: #fff;
+}
+
+html:not(.dark) .theme-toggle-btn .mdi {
+  color: #000;
+}
+
 .mobile-theme-toggle {
   display: none;
 }
@@ -267,13 +279,14 @@ watch(
 }
 
 @media (min-width: 769px) {
-  .desktop-nav, .logo-area .desktop-title {
+  .desktop-nav,
+  .logo-area .desktop-title {
     display: flex;
   }
 }
 
 @media (max-width: 768px) {
-   .desktop-nav,
+  .desktop-nav,
   .right-section .theme-toggle-btn {
     display: none;
   }
@@ -286,14 +299,12 @@ watch(
   .left-section {
     flex-grow: 1;
   }
-    .mobile-theme-toggle {
+  .mobile-theme-toggle {
     display: flex;
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: var(--color-button-bg);
-    color: var(--color-button-text);
-    border: none;
+    background-color: #eee;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -301,7 +312,6 @@ watch(
     align-items: center;
     cursor: pointer;
     z-index: 1000;
-    transition: background-color 0.3s, color 0.3s;
   }
 
   .mobile-theme-toggle:hover {
@@ -312,6 +322,5 @@ watch(
   .mobile-theme-toggle .mdi {
     font-size: 20px;
   }
-
 }
 </style>
