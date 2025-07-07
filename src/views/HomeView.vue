@@ -47,6 +47,10 @@
           class="blog-content post-content"
           v-html="selectedCard.content"
         ></div>
+        <!-- 본문 내 URL 자동 추출 및 북마크 카드 렌더링 -->
+        <div v-if="bookmarkUrls.length" class="bookmark-list">
+          <BookmarkCard v-for="url in bookmarkUrls" :key="url" :url="url" />
+        </div>
 
         <div class="button-group">
           <a
@@ -120,6 +124,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { viewState } from "../store/viewState";
 import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
+import BookmarkCard from "../components/BookmarkCard.vue";
 
 // =================================================================
 // ==============  👇 여기를 true/false 로 바꾸세요 👇 ==============
@@ -272,6 +277,19 @@ const selectTag = (tag) => {
   selectedTag.value = tag;
   goBack();
 };
+
+// 본문에서 URL 추출 (간단한 정규식)
+import { computed } from "vue";
+const urlRegex =
+  /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+)(?![^<]*>|[^\[]*\])/g;
+const bookmarkUrls = computed(() => {
+  if (!selectedCard.value || !selectedCard.value.content) return [];
+  // HTML 태그 제거 후 URL 추출
+  const text = selectedCard.value.content.replace(/<[^>]+>/g, " ");
+  const urls = text.match(urlRegex) || [];
+  // 중복 제거
+  return [...new Set(urls)];
+});
 
 watch(
   () => route.query.post,
@@ -729,6 +747,12 @@ hr {
   font-size: 12px;
   height: 100%;
   color: var(--color-primary);
+}
+.bookmark-list {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 @media (min-width: 600px) {
   .contents-grid {
