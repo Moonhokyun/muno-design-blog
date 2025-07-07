@@ -123,7 +123,6 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { viewState } from "../store/viewState";
 import { useRoute, useRouter } from "vue-router";
-import { marked } from "marked";
 import BookmarkCard from "../components/BookmarkCard.vue";
 
 // =================================================================
@@ -279,7 +278,6 @@ const selectTag = (tag) => {
 };
 
 // 본문에서 URL 추출 (간단한 정규식)
-import { computed } from "vue";
 const urlRegex =
   /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+)(?![^<]*>|[^\[]*\])/g;
 const bookmarkUrls = computed(() => {
@@ -307,7 +305,6 @@ watch(
           ...cardToSelect,
           content: "내용을 불러오는 중...",
         };
-        // marked 라이브러리 제거, HTML을 직접 사용
         const htmlContent = await fetchPostContent(newId);
         selectedCard.value = { ...cardToSelect, content: htmlContent };
       } else {
