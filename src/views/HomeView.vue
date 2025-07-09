@@ -43,7 +43,10 @@
           </div>
         </div>
         <hr />
-        <div class="blog-content post-content" v-html="fixedContent"></div>
+        <div
+          class="blog-content post-content"
+          v-html="selectedCard.content"
+        ></div>
 
         <div class="button-group">
           <a
@@ -118,57 +121,6 @@ import { viewState } from "../store/viewState";
 import { useRoute, useRouter } from "vue-router";
 import { marked } from "marked";
 
-// 북마크 블록 구조 변환 함수
-function fixBookmarkHtml(html) {
-  if (!html) return html;
-  // DOMParser를 사용해 HTML 파싱
-  let doc;
-  try {
-    doc = new window.DOMParser().parseFromString(
-      `<div>${html}</div>`,
-      "text/html"
-    );
-  } catch (e) {
-    return html;
-  }
-  // 북마크 블록 구조 변환
-  const blocks = doc.querySelectorAll(".notion-bookmark-block");
-  blocks.forEach((block) => {
-    const a = block.querySelector("a");
-    if (!a) return;
-    const link = a.querySelector(".notion-bookmark-link");
-    const url = a.querySelector(".notion-bookmark-url");
-    const thumb = a.querySelector(".notion-bookmark-thumb");
-    // bookmark-description 생성
-    if (link || url) {
-      const desc = doc.createElement("div");
-      desc.className = "bookmark-description";
-      if (link) desc.appendChild(link.cloneNode(true));
-      if (url) desc.appendChild(url.cloneNode(true));
-      // 기존 요소 제거
-      if (link) link.remove();
-      if (url) url.remove();
-      a.insertBefore(desc, thumb);
-    }
-  });
-  // head/body 전용 태그 제거
-  const forbiddenTags = [
-    "meta",
-    "link",
-    "script",
-    "style",
-    "title",
-    "base",
-    "head",
-  ];
-  forbiddenTags.forEach((tag) => {
-    doc.querySelectorAll(tag).forEach((el) => el.remove());
-  });
-  // <img>, <br>, <hr> 등 셀프 클로징 태그는 innerHTML로 변환 시 자동 보정됨
-  // 최종 변환된 HTML 반환
-  return doc.body.firstElementChild.innerHTML;
-}
-
 // =================================================================
 // ==============  👇 여기를 true/false 로 바꾸세요 👇 ==============
 // =================================================================
@@ -205,7 +157,7 @@ const localPosts = [
 | :--- | :--- | :--- | :--- |
 | 카카오톡 오픈채팅 | • 높은 접근성 | • '빌런' 유입 가능성 | • 전국 단위 서비스 |
 | 문토 (Munto) | • 전문성 기반 운영 | • 제한된 사용자 풀 | • 수익화 모임 |
-| 당근 (Karrot) | • 지역 기백 | • 한정적인 유저 풀 | • 동네 친목 모임 |`,
+| 당근 (Karrot) | • 지역 기반 | • 한정적인 유저 풀 | • 동네 친목 모임 |`,
   },
 ];
 
@@ -362,71 +314,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.post-content :deep(.notion-bookmark-block > a) {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  margin: 1em 0;
-  transition: background-color 0.2s;
-}
-
-.post-content :deep(.notion-bookmark-block > a:hover) {
-  background-color: var(--color-button-hover-bg);
-}
-
-.post-content :deep(.bookmark-description) {
-  width: 60%;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.post-content :deep(.bookmark-description .notion-bookmark-link) {
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.post-content :deep(.bookmark-description .notion-bookmark-url) {
-  color: #80aec6;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.post-content :deep(.notion-bookmark-thumb) {
-  width: 40%;
-  max-width: 400px;
-  flex-shrink: 0;
-}
-
-.post-content :deep(.notion-bookmark-thumb img) {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .post-content :deep(.notion-bookmark-block > a) {
-    flex-direction: column;
-  }
-  .post-content :deep(.bookmark-description),
-  .post-content :deep(.notion-bookmark-thumb) {
-    width: 100%;
-  }
-  .post-content :deep(.notion-bookmark-thumb) {
-    max-width: 100%;
-  }
-}
 /* [수정] 스크롤 처리를 부모에게 위임 */
 .blog-content {
   line-height: 1.8;
@@ -510,10 +397,14 @@ onUnmounted(() => {
 /* 테이블의 네 모서리에 border-radius 적용 */
 .blog-content :deep(thead tr:first-child > th:first-child) {
   border-top-left-radius: 6px;
+}
+.blog-content :deep(thead tr:first-child > th:first-child) {
   border-bottom-left-radius: 6px;
 }
 .blog-content :deep(thead tr:first-child > th:last-child) {
   border-top-right-radius: 6px;
+}
+.blog-content :deep(thead tr:first-child > th:last-child) {
   border-bottom-right-radius: 6px;
 }
 .blog-content :deep(tbody tr:last-child > td:first-child) {
