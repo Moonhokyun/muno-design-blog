@@ -289,7 +289,6 @@ watch(
           ...cardToSelect,
           content: "내용을 불러오는 중...",
         };
-        // marked 라이브러리 제거, HTML을 직접 사용
         const htmlContent = await fetchPostContent(newId);
         selectedCard.value = { ...cardToSelect, content: htmlContent };
       } else {
@@ -336,21 +335,6 @@ onUnmounted(() => {
 }
 .post-content :deep(.notion-list-item-box) {
   padding-left: 2em;
-}
-
-/* [추가] 블로그 본문 링크 Embed 스타일 */
-.post-content :deep(a) {
-  display: block;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  margin: 1em 0;
-  transition: background-color 0.2s;
-}
-.post-content :deep(a:hover) {
-  background-color: #f5f5f5;
 }
 
 .blog-content :deep(h1),
@@ -759,16 +743,16 @@ hr {
     padding-bottom: 0;
   }
   .sidebar ul {
-    display: flex; /* [수정] flex display 추가 */
+    display: flex; 
     flex-direction: row;
-    gap: 8px; /* [수정] gap 추가 */
-    overflow-x: auto; /* [수정] 가로 스크롤 추가 */
-    white-space: nowrap; /* [수정] 줄바꿈 방지 */
-    padding-bottom: 8px; /* 스크롤바 공간 확보 */
+    gap: 8px; 
+    overflow-x: auto; 
+    white-space: nowrap; 
+    padding-bottom: 8px; 
   }
   .sidebar li {
-    flex-shrink: 0; /* [수정] 아이템이 줄어들지 않도록 설정 */
-    width: auto; /* [수정] 너비 자동 조정 */
+    flex-shrink: 0; 
+    width: auto; 
     max-width: none;
   }
   .sidebar li a {
@@ -812,19 +796,21 @@ hr {
   color: #000;
 }
 
-/* [수정] 실제 HTML 구조에 맞게 북마크 스타일을 수정합니다. */
+/* === START: 북마크 스타일 수정 (CSS Grid) === */
 .post-content :deep(.notion-bookmark-block > a) {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 100px 1fr; /* 1열(이미지)은 100px, 2열(텍스트)은 나머지 공간 모두 사용 */
+  grid-template-rows: 1fr auto; /* 1행(제목)은 남는 공간, 2행(URL)은 내용만큼의 높이 */
+  align-items: stretch; /* 아이템들이 그리드 셀의 전체 높이를 차지하도록 */
+  column-gap: 16px; /* 열 사이의 간격 */
+
+  padding: 0; /* 내부 컨텐츠로 간격을 제어하므로 padding 제거 */
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   margin: 1em 0;
-  padding: 12px;
-  box-sizing: border-box;
   transition: background-color 0.2s;
 }
 
@@ -833,46 +819,54 @@ hr {
 }
 
 .post-content :deep(.notion-bookmark-thumb) {
-  flex: 0 0 100px;
-  height: 100px;
+  grid-column: 1; /* 1번 열에 위치 */
+  grid-row: 1 / 3; /* 1번 행에서 시작해서 3번 행 전까지(즉, 2개 행을 모두) 차지 */
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin-right: 12px;
+  margin-right: 0; /* grid-gap으로 대체 */
 }
 
-.post-content :deep(.notion-bookmark-link),
-.post-content :deep(.notion-bookmark-url) {
-  flex-basis: calc(100% - 112px);
-  box-sizing: border-box;
+/* Link와 URL은 Grid에 의해 자동으로 2열의 1행, 2행에 배치됩니다. */
+.post-content :deep(.notion-bookmark-link) {
+  grid-column: 2; /* 2번 열에 위치 */
+  grid-row: 1; /* 1번 행에 위치 */
+  align-self: end; /* 셀의 아래쪽에 붙임 */
+  font-weight: 600;
+  padding: 12px 12px 4px 0; /* 오른쪽과 위아래 패딩 */
+  width: auto;
   display: block;
 }
 
-.post-content :deep(.notion-bookmark-link) {
-  font-weight: 600;
-  margin-bottom: 8px;
-  width: auto;
-}
-
 .post-content :deep(.notion-bookmark-url) {
+  grid-column: 2; /* 2번 열에 위치 */
+  grid-row: 2; /* 2번 행에 위치 */
+  align-self: start; /* 셀의 위쪽에 붙임 */
   color: #80aec6;
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 4px 12px 12px 0; /* 오른쪽과 위아래 패딩 */
 }
+/* === END: 북마크 스타일 수정 (CSS Grid) === */
 
 
 @media (max-width: 768px) {
+  /* ... 기존 미디어 쿼리 ... */
   .post-content :deep(.notion-bookmark-block > a) {
+    display: flex; /* 모바일에서는 다시 flex로 전환하여 단순한 세로 정렬로 변경 */
     flex-direction: column;
   }
-
-  /* .post-content :deep(.bookmark-description), */
   .post-content :deep(.notion-bookmark-thumb) {
     width: 100%;
-  }
-
-  .post-content :deep(.notion-bookmark-thumb) {
     max-width: 100%;
+    height: 150px; /* 모바일 이미지 높이 고정 */
+    margin-right: 0;
+  }
+  .post-content :deep(.notion-bookmark-link),
+  .post-content :deep(.notion-bookmark-url) {
+    padding: 8px 12px;
   }
 }
 </style>
