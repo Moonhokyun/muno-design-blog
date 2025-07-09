@@ -811,4 +811,72 @@ hr {
 .dark .feedback-button {
   color: #000;
 }
+
+.post-content :deep(.notion-bookmark-block > a) {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  margin: 1em 0;
+  transition: background-color 0.2s;
+}
+
+.post-content :deep(.notion-bookmark-block > a:hover) {
+  background-color: var(--color-button-hover-bg);
+}
+
+.post-content :deep(.bookmark-description) {
+  width: 60%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-content :deep(.bookmark-description .notion-bookmark-link) {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.post-content :deep(.bookmark-description .notion-bookmark-url) {
+  color: #80aec6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-content :deep(.notion-bookmark-thumb) {
+  width: 40%;
+  max-width: 400px;
+  flex-shrink: 0;
+}
+
+.post-content :deep(.notion-bookmark-thumb img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .post-content :deep(.notion-bookmark-block > a) {
+    flex-direction: column;
+  }
+
+  .post-content :deep(.bookmark-description),
+  .post-content :deep(.notion-bookmark-thumb) {
+    width: 100%;
+  }
+
+  .post-content :deep(.notion-bookmark-thumb) {
+    max-width: 100%;
+  }
+}
 </style>
