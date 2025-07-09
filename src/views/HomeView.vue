@@ -812,16 +812,19 @@ hr {
   color: #000;
 }
 
+/* [수정] 실제 HTML 구조에 맞게 북마크 스타일을 수정합니다. */
 .post-content :deep(.notion-bookmark-block > a) {
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  flex-wrap: wrap;
+  align-items: center;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   margin: 1em 0;
+  padding: 12px;
+  box-sizing: border-box;
   transition: background-color 0.2s;
 }
 
@@ -829,48 +832,41 @@ hr {
   background-color: var(--color-button-hover-bg);
 }
 
-.post-content :deep(.bookmark-description) {
-  width: 60%;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.post-content :deep(.notion-bookmark-thumb) {
+  flex: 0 0 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.post-content :deep(.notion-bookmark-link),
+.post-content :deep(.notion-bookmark-url) {
+  flex-basis: calc(100% - 112px);
   box-sizing: border-box;
-  overflow: hidden;
+  display: block;
 }
 
-.post-content :deep(.bookmark-description .notion-bookmark-link) {
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+.post-content :deep(.notion-bookmark-link) {
+  font-weight: 600;
+  margin-bottom: 8px;
+  width: auto;
 }
 
-.post-content :deep(.bookmark-description .notion-bookmark-url) {
+.post-content :deep(.notion-bookmark-url) {
   color: #80aec6;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.post-content :deep(.notion-bookmark-thumb) {
-  width: 40%;
-  max-width: 400px;
-  flex-shrink: 0;
-}
-
-.post-content :deep(.notion-bookmark-thumb img) {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 
 @media (max-width: 768px) {
   .post-content :deep(.notion-bookmark-block > a) {
     flex-direction: column;
   }
 
-  .post-content :deep(.bookmark-description),
+  /* .post-content :deep(.bookmark-description), */
   .post-content :deep(.notion-bookmark-thumb) {
     width: 100%;
   }
